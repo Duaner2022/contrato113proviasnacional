@@ -87,27 +87,40 @@
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv';
         const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv';
 
-        // Función para cargar Lote 1 con lógica corregida
+        // Función Lote 1 BLINDADA contra errores
         async function cargarLote1() {
             try {
                 const response = await fetch(URL_LOTE1);
                 const data = await response.text();
-                const filas = data.split('\n').slice(1);
+                // Separar filas de forma segura
+                const filas = data.split(/\r?\n/).slice(1);
                 const tabla = document.getElementById('tabla-lote1');
                 
                 let totalItems = 0; let totalLlegados = 0;
                 tabla.innerHTML = '';
 
                 filas.forEach(fila => {
-                    const col = fila.split(',');
+                    // 1. Separar columnas
+                    let col = fila.split(',');
                     if(col.length < 3) return;
 
-                    const cod = col[0];
-                    const desc = col[1];
-                    const tot = parseFloat(col[2]) || 0;
-                    const llego = parseFloat(col[3]) || 0;
+                    // 2. Extraer datos INTELIGENTEMENTE (Soporta comas en el nombre)
+                    const cod = col[0];                 // Primero: Código
+                    const llegoRaw = col.pop();         // Último: Lo que llegó
+                    const totalRaw = col.pop();         // Penúltimo: Total
+                    
+                    // Lo que queda en medio es la descripción (unimos por si tenía comas)
+                    col.shift(); 
+                    const desc = col.join(', ').replace(/"/g, ''); 
 
-                    // Detectar si es el KIT para resaltarlo
+                    // 3. Convertir números
+                    const tot = parseFloat(totalRaw) || 0;
+                    const llego = parseFloat(llegoRaw) || 0;
+
+                    // SI EL TOTAL ES 0, SALTAR FILA (Para que no salga verde falso)
+                    if (tot <= 0) return;
+
+                    // Detectar KIT
                     let claseFila = "";
                     let icono = "";
                     if(desc && (desc.toLowerCase().includes("kit") || desc.toLowerCase().includes("paquete"))) {
@@ -118,16 +131,14 @@
                     totalItems += tot;
                     totalLlegados += llego;
 
-                    // --- LÓGICA DE ESTADO CORREGIDA (NUEVO) ---
+                    // --- SEMÁFORO ---
                     let estado = "🔴"; 
-                    if (tot === 0) {
-                        estado = ""; // Si es 0 o vacío, no mostrar nada
-                    } else if (llego >= tot) {
-                        estado = "✅"; // Solo verde si cumplió
+                    if (llego >= tot) {
+                        estado = "✅"; 
                     } else if (llego > 0) {
-                        estado = "🚚"; // En proceso
+                        estado = "🚚"; 
                     }
-                    // ------------------------------------------
+                    // ----------------
 
                     tabla.innerHTML += `
                         <tr class="${claseFila}">
@@ -139,7 +150,7 @@
                         </tr>`;
                 });
 
-                // Actualizar Barra
+                // Barra de Progreso
                 const porc = totalItems > 0 ? Math.round((totalLlegados / totalItems) * 100) : 0;
                 const barra = document.getElementById('barra-lote1');
                 barra.style.width = porc + "%";
@@ -152,7 +163,6 @@
             } catch (e) { console.error("Error Lote 1", e); }
         }
 
-        // Función para cargar Herramientas
         async function cargarHerramientas() {
             try {
                 const response = await fetch(URL_HERRAMIENTAS);
@@ -167,6 +177,9 @@
                     
                     const tot = parseFloat(col[2]) || 0;
                     const verif = parseFloat(col[3]) || 0;
+                    // Solo mostramos si hay requerimiento > 0
+                    if(tot <= 0) return;
+
                     const check = verif >= tot ? '<span class="badge bg-success">OK</span>' : '<span class="badge bg-secondary">Falta</span>';
 
                     tabla.innerHTML += `<tr><td>${col[0]}</td><td>${col[1]}</td><td>${tot}</td><td>${verif} ${check}</td></tr>`;
@@ -174,7 +187,6 @@
             } catch (e) { console.error("Error Herramientas"); }
         }
 
-        // Función del Buscador (NUEVO)
         function filtrarTabla() {
             var input = document.getElementById("buscadorInput");
             var filter = input.value.toUpperCase();
