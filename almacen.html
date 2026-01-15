@@ -35,6 +35,11 @@
                 <div id="barra-lote1" class="progress-bar bg-success" role="progressbar" style="width: 0%;">0%</div>
             </div>
 
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" id="buscadorInput" class="form-control border-start-0" placeholder="🔍 Buscar material... (Ej: Perno, Viga, CB200)" onkeyup="filtrarTabla()">
+            </div>
+
             <div style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-bordered table-sm table-hover">
                     <thead class="table-light" style="position: sticky; top: 0;">
@@ -78,10 +83,11 @@
     </div>
 
     <script>
-        // ⚠️ PEGA AQUÍ TUS ENLACES DE GOOGLE SHEETS (CSV)
+        // TUS ENLACES DE GOOGLE SHEETS
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv';
         const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv';
 
+        // Función para cargar Lote 1 con lógica corregida
         async function cargarLote1() {
             try {
                 const response = await fetch(URL_LOTE1);
@@ -104,7 +110,7 @@
                     // Detectar si es el KIT para resaltarlo
                     let claseFila = "";
                     let icono = "";
-                    if(desc.toLowerCase().includes("kit") || desc.toLowerCase().includes("paquete")) {
+                    if(desc && (desc.toLowerCase().includes("kit") || desc.toLowerCase().includes("paquete"))) {
                         claseFila = "fila-kit";
                         icono = "📦 ";
                     }
@@ -112,10 +118,16 @@
                     totalItems += tot;
                     totalLlegados += llego;
 
-                    // Estado Visual
-                    let estado = "🔴";
-                    if(llego >= tot) estado = "✅";
-                    else if(llego > 0) estado = "🚚";
+                    // --- LÓGICA DE ESTADO CORREGIDA (NUEVO) ---
+                    let estado = "🔴"; 
+                    if (tot === 0) {
+                        estado = ""; // Si es 0 o vacío, no mostrar nada
+                    } else if (llego >= tot) {
+                        estado = "✅"; // Solo verde si cumplió
+                    } else if (llego > 0) {
+                        estado = "🚚"; // En proceso
+                    }
+                    // ------------------------------------------
 
                     tabla.innerHTML += `
                         <tr class="${claseFila}">
@@ -137,9 +149,10 @@
                 else if(porc < 100) barra.className = "progress-bar bg-warning text-dark";
                 else barra.className = "progress-bar bg-success";
 
-            } catch (e) { console.error("Error Lote 1"); }
+            } catch (e) { console.error("Error Lote 1", e); }
         }
 
+        // Función para cargar Herramientas
         async function cargarHerramientas() {
             try {
                 const response = await fetch(URL_HERRAMIENTAS);
@@ -159,6 +172,27 @@
                     tabla.innerHTML += `<tr><td>${col[0]}</td><td>${col[1]}</td><td>${tot}</td><td>${verif} ${check}</td></tr>`;
                 });
             } catch (e) { console.error("Error Herramientas"); }
+        }
+
+        // Función del Buscador (NUEVO)
+        function filtrarTabla() {
+            var input = document.getElementById("buscadorInput");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("tabla-lote1");
+            var tr = table.getElementsByTagName("tr");
+
+            for (var i = 0; i < tr.length; i++) {
+                var tdCodigo = tr[i].getElementsByTagName("td")[0];
+                var tdDesc = tr[i].getElementsByTagName("td")[1];
+                if (tdCodigo || tdDesc) {
+                    var txtValue = (tdCodigo.textContent || tdCodigo.innerText) + " " + (tdDesc.textContent || tdDesc.innerText);
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
         }
 
         function toggleHerramientas() {
