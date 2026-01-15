@@ -9,12 +9,19 @@
     
     <style>
         body { background-color: #f4f6f9; padding-bottom: 50px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .header-almacen { background: #0d6efd; color: white; padding: 15px 0; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .header-almacen { background: linear-gradient(90deg, #0d6efd 0%, #0043a8 100%); color: white; padding: 15px 0; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* Barra de Progreso */
         .progress-bar { transition: width 1.5s ease-in-out; font-weight: bold; }
+        
+        /* Estilos de Tabla */
         .fila-kit { background-color: #e7f1ff !important; font-weight: bold; border-left: 4px solid #0d6efd; }
-        .text-faltante { color: #dc3545; font-weight: bold; }
-        .text-completo { color: #adb5bd; }
+        .text-faltante { color: #dc3545; font-weight: 700; } /* Rojo Fuerte */
+        .text-completo { color: #adb5bd; font-size: 0.9em; } /* Gris suave */
+        
+        /* Buscador */
+        .search-box { border-radius: 20px; }
     </style>
 </head>
 <body>
@@ -31,32 +38,32 @@
         <div class="card-box">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="text-primary m-0"><i class="fas fa-truck-loading"></i> Recepción 1ra Entrega (Lote 1)</h5>
-                <span class="badge bg-light text-dark border">En vivo</span>
+                <span class="badge bg-light text-dark border">En tiempo real</span>
             </div>
             <p class="text-muted small">Control de recepción de bultos y estructuras principales.</p>
             
-            <div class="progress" style="height: 25px; margin-bottom: 15px; border-radius: 10px;">
+            <div class="progress" style="height: 25px; margin-bottom: 15px; border-radius: 10px; background-color: #e9ecef;">
                 <div id="barra-lote1" class="progress-bar bg-secondary" role="progressbar" style="width: 0%;">Cargando...</div>
             </div>
 
             <div class="input-group mb-3 shadow-sm">
-                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" id="buscadorInput" class="form-control border-start-0" placeholder="🔍 Buscar material... (Ej: Perno, Viga, CB200)" onkeyup="filtrarTabla()">
+                <span class="input-group-text bg-white border-end-0 search-box"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" id="buscadorInput" class="form-control border-start-0 search-box" placeholder="🔍 Buscar material... (Ej: Perno, Viga, CB200)" onkeyup="filtrarTabla()">
             </div>
 
-            <div style="max-height: 450px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+            <div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
                 <table class="table table-bordered table-sm table-hover mb-0" style="font-size: 0.9rem;">
                     <thead class="table-light" style="position: sticky; top: 0; z-index: 10;">
                         <tr class="text-center align-middle">
-                            <th>Cód.</th>
+                            <th style="width: 15%;">Cód.</th>
                             <th class="text-start">Descripción</th>
-                            <th>Total</th>
-                            <th>Llegó</th>
-                            <th>Falta</th> <th>Est.</th>
+                            <th style="width: 10%;">Total</th>
+                            <th style="width: 10%;">Llegó</th>
+                            <th style="width: 10%;">Falta</th> <th style="width: 10%;">Est.</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-lote1">
-                        <tr><td colspan="6" class="text-center py-3"><div class="spinner-border text-primary" role="status"></div><br>Conectando con Google Sheets...</td></tr>
+                        <tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><br>Conectando con la Base de Datos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -92,20 +99,20 @@
     </div>
 
     <script>
-        // --- TUS ENLACES (Verifica que no tengan espacios al final) ---
+        // --- 1. TUS ENLACES DE GOOGLE SHEETS ---
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv';
         const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv';
 
-        // --- CARGAR LOTE 1 (BLINDADO) ---
+        // --- 2. FUNCIÓN DE CARGA BLINDADA (LOTE 1) ---
         async function cargarLote1() {
             const tabla = document.getElementById('tabla-lote1');
             try {
                 const response = await fetch(URL_LOTE1);
                 
-                if (!response.ok) throw new Error("Error de conexión con Google (" + response.status + ")");
+                if (!response.ok) throw new Error("Google Sheets no responde (" + response.status + ")");
                 
                 const data = await response.text();
-                // Separar filas de forma segura
+                // Separar filas de forma segura (detecta saltos de línea de Windows o Mac)
                 const filas = data.split(/\r?\n/).slice(1);
                 
                 let totalItems = 0; let totalLlegados = 0;
@@ -114,20 +121,21 @@
 
                 filas.forEach(fila => {
                     let col = fila.split(',');
-                    if(col.length < 3) return; // Saltar filas rotas
+                    // Saltar filas rotas o muy cortas
+                    if(col.length < 3) return;
 
-                    // --- PARSEO INTELIGENTE (Soporta comas en descripción) ---
+                    // --- TRUCO PARA LEER DESCRIPCIONES CON COMAS ---
                     const cod = col[0].trim();
-                    const llegoRaw = col.pop();     // Última columna es "Llegó"
-                    const totalRaw = col.pop();     // Penúltima es "Total"
+                    const llegoRaw = col.pop();     // La última columna siempre es "Llegó"
+                    const totalRaw = col.pop();     // La penúltima siempre es "Total"
                     col.shift();                    // Quitamos el código del inicio
-                    const desc = col.join(', ').replace(/"/g, '').trim(); // El resto es descripción
+                    const desc = col.join(', ').replace(/"/g, '').trim(); // Lo del medio es descripción
 
-                    // Convertir a números
+                    // Convertir textos a números
                     const tot = parseFloat(totalRaw) || 0;
                     const llego = parseFloat(llegoRaw) || 0;
 
-                    // --- FILTRO: Si Total es 0 o negativo, NO MOSTRAR ---
+                    // --- FILTRO IMPORTANTE: Si Total es 0, ignorar fila ---
                     if (tot <= 0) return;
 
                     filasValidas++;
@@ -136,13 +144,13 @@
 
                     // Cálculos
                     let falta = tot - llego;
-                    if (falta < 0) falta = 0; // Evitar negativos si llega de más
+                    if (falta < 0) falta = 0; // Por si llega de más
 
-                    // Estilos
+                    // Estilos visuales para "Faltante"
                     let estiloFalta = (falta > 0) ? "text-faltante" : "text-completo";
                     let valFalta = (falta > 0) ? falta : "-";
 
-                    // Detectar si es KIT (Caja azul)
+                    // Detectar si es el KIT (Caja azul)
                     let claseFila = "";
                     let icono = "";
                     if(desc && (desc.toLowerCase().includes("kit") || desc.toLowerCase().includes("paquete"))) {
@@ -150,12 +158,12 @@
                         icono = "📦 ";
                     }
 
-                    // Semáforo
+                    // Semáforo visual
                     let estado = "<span class='text-danger'>🔴</span>"; 
                     if (llego >= tot) estado = "<span class='text-success'>✅</span>"; 
                     else if (llego > 0) estado = "🚚"; 
 
-                    // HTML de la fila
+                    // Dibujar la fila
                     tabla.innerHTML += `
                         <tr class="${claseFila}">
                             <td><small class="text-muted fw-bold">${cod}</small></td>
@@ -167,33 +175,34 @@
                         </tr>`;
                 });
 
-                // Si no hay filas válidas (Quizás el Excel está mal borrado)
+                // Si no encontró nada válido, avisar
                 if (filasValidas === 0) {
-                     tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-3">No se encontraron datos. Verifica que la Columna C (Total) tenga números mayores a 0 en el Excel.</td></tr>';
+                     tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-3 fw-bold">⚠️ No se encontraron datos válidos.<br><small class="text-muted">Verifica que hayas borrado los pesos de la columna D en el Excel y que la columna C tenga cantidades.</small></td></tr>';
                 }
 
-                // Actualizar Barra
+                // Actualizar Barra de Progreso
                 const porc = totalItems > 0 ? Math.round((totalLlegados / totalItems) * 100) : 0;
                 const barra = document.getElementById('barra-lote1');
                 barra.style.width = porc + "%";
                 barra.innerText = porc + "% RECIBIDO";
                 
-                if(porc < 30) barra.className = "progress-bar bg-danger";
-                else if(porc < 99) barra.className = "progress-bar bg-warning text-dark";
-                else barra.className = "progress-bar bg-success";
+                // Colores de la barra
+                if(porc < 30) { barra.className = "progress-bar bg-danger"; }
+                else if(porc < 99) { barra.className = "progress-bar bg-warning text-dark"; }
+                else { barra.className = "progress-bar bg-success"; }
 
             } catch (e) { 
                 console.error(e);
-                tabla.innerHTML = `<tr><td colspan="6" class="text-center text-danger p-3"><i class="fas fa-exclamation-triangle"></i> Error al cargar: ${e.message}<br><small>Verifica el enlace CSV y tu conexión a internet.</small></td></tr>`;
+                tabla.innerHTML = `<tr><td colspan="6" class="text-center text-danger p-3"><i class="fas fa-exclamation-triangle"></i> <strong>Error de Conexión:</strong><br>${e.message}<br><small>Revisa tu internet o el enlace de Google Sheets.</small></td></tr>`;
             }
         }
 
-        // --- CARGAR HERRAMIENTAS ---
+        // --- 3. CARGA DE HERRAMIENTAS ---
         async function cargarHerramientas() {
             const tabla = document.getElementById('tabla-herramientas');
             try {
                 const response = await fetch(URL_HERRAMIENTAS);
-                if (!response.ok) return; // Fallo silencioso en herramientas
+                if (!response.ok) return; 
                 
                 const data = await response.text();
                 const filas = data.split(/\r?\n/).slice(1);
@@ -203,21 +212,19 @@
                     let col = fila.split(',');
                     if(col.length < 3) return;
                     
-                    // Parseo simple para herramientas (usualmente no tienen comas complejas)
-                    // Si tus herramientas tienen comas, avísame para aplicar la lógica compleja aquí también
                     const item = col[0];
                     const desc = col[1];
                     const tot = parseFloat(col[2]) || 0;
                     const verif = parseFloat(col[3]) || 0;
                     
-                    if(tot <= 0) return;
+                    if(tot <= 0) return; // Saltar vacíos
 
                     let falta = tot - verif;
                     if (falta < 0) falta = 0;
                     
                     let estiloFalta = (falta > 0) ? "text-danger fw-bold" : "text-muted";
                     let valFalta = (falta > 0) ? falta : "-";
-                    const check = verif >= tot ? '<span class="badge bg-success">OK</span>' : '<span class="badge bg-secondary">Pendiente</span>';
+                    const check = verif >= tot ? '<span class="badge bg-success">OK</span>' : '<span class="badge bg-secondary">Pend.</span>';
 
                     tabla.innerHTML += `
                         <tr>
@@ -229,11 +236,11 @@
                         </tr>`;
                 });
             } catch (e) { 
-                tabla.innerHTML = `<tr><td colspan="5" class="text-danger">Error cargando lista.</td></tr>`;
+                tabla.innerHTML = `<tr><td colspan="5" class="text-danger">No se pudo cargar la lista de herramientas.</td></tr>`;
             }
         }
 
-        // --- BUSCADOR ---
+        // --- 4. FUNCIONES DE INTERFAZ ---
         function filtrarTabla() {
             var input = document.getElementById("buscadorInput");
             var filter = input.value.toUpperCase();
@@ -259,7 +266,7 @@
             x.style.display = x.style.display === "none" ? "block" : "none";
         }
 
-        // INICIAR AL CARGAR
+        // INICIAR AL CARGAR LA PÁGINA
         cargarLote1();
         cargarHerramientas();
     </script>
