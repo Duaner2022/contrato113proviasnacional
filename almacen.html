@@ -70,19 +70,17 @@
             </div>
             
             <div id="lista-herramientas" style="display:none;">
-                <div style="max-height: 300px; overflow-y: auto;">
-                    <table class="table table-striped table-sm mb-0">
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+                    <table class="table table-striped table-sm mb-0" style="font-size: 0.9rem;">
                         <thead class="table-light" style="position: sticky; top: 0;">
-                            <tr>
-                                <th>Item</th>
-                                <th>Herramienta</th>
-                                <th>Req.</th>
-                                <th>Verif.</th>
-                                <th>Falta</th>
+                            <tr class="text-center align-middle">
+                                <th style="width: 10%;">Item</th>
+                                <th class="text-start">Herramienta</th>
+                                <th style="width: 15%;">Total</th> <th style="width: 15%;">Llegó</th> <th style="width: 15%;">Falta</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-herramientas">
-                            <tr><td colspan="5" class="text-center">Cargando...</td></tr>
+                            <tr><td colspan="5" class="text-center py-3">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -92,17 +90,17 @@
     </div>
 
     <script>
-        // --- TUS ENLACES (Verifica que no tengan espacios extra) ---
+        // --- TUS ENLACES ---
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv';
         const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv';
 
-        // --- FUNCIÓN PARA LEER CSV CORRECTAMENTE ---
-        // Usa Regex para respetar las comas dentro de las comillas (ej: "tuerca, hexagonal")
+        // --- FUNCIÓN PARA LEER CSV ---
         function parsearCSV(texto) {
             const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
             return texto.split(regex);
         }
 
+        // --- CARGAR LOTE 1 (PRINCIPAL) ---
         async function cargarLote1() {
             const tabla = document.getElementById('tabla-lote1');
             try {
@@ -117,29 +115,26 @@
 
                 filas.forEach(fila => {
                     let col = parsearCSV(fila);
-                    // Validamos que tenga al menos las 4 columnas principales
                     if(col.length < 4) return;
 
-                    // --- LECTURA POR POSICIÓN EXACTA (0, 1, 2, 3) ---
-                    // Ignoramos E (Falta) y F (Estado)
-                    const cod = col[0].trim();                      // Col A
-                    const desc = col[1].replace(/"/g, '').trim();   // Col B
-                    const totalRaw = col[2].replace(/"/g, '');      // Col C (Total)
-                    const llegoRaw = col[3].replace(/"/g, '');      // Col D (Llegó)
+                    // Lectura Estricta (A, B, C, D)
+                    const cod = col[0].trim();
+                    const desc = col[1].replace(/"/g, '').trim();
+                    const totalRaw = col[2].replace(/"/g, '');
+                    const llegoRaw = col[3].replace(/"/g, '');
 
                     const tot = parseFloat(totalRaw) || 0;
                     const llego = parseFloat(llegoRaw) || 0;
 
-                    if (tot <= 0 && llego <= 0) return; // Si todo es 0, saltar
+                    if (tot <= 0 && llego <= 0) return; 
 
                     filasValidas++;
                     totalItems += tot;
                     totalLlegados += llego;
 
-                    // Cálculos Web
+                    // Cálculos
                     let falta = tot - llego;
                     if (falta < 0) falta = 0;
-                    
                     let estiloFalta = (falta > 0) ? "text-faltante" : "text-completo";
                     let valFalta = (falta > 0) ? falta : "-";
 
@@ -187,6 +182,7 @@
             }
         }
 
+        // --- CARGAR HERRAMIENTAS (TABLA LIMPIA) ---
         async function cargarHerramientas() {
             const tabla = document.getElementById('tabla-herramientas');
             try {
@@ -200,9 +196,9 @@
                     let col = parsearCSV(fila);
                     if(col.length < 4) return;
                     
-                    // Lectura Estricta (0,1,2,3)
+                    // Lectura Estricta (A, B, C, D)
                     const item = col[0].trim();
-                    const desc = col[1].replace(/"/g, '').trim();
+                    const desc = col[1].replace(/"/g, '').trim(); // Nombre limpio
                     const totalRaw = col[2].replace(/"/g, '');
                     const verifRaw = col[3].replace(/"/g, '');
                     
@@ -211,19 +207,21 @@
                     
                     if(tot <= 0) return;
 
+                    // Cálculos
                     let falta = tot - verif;
                     if (falta < 0) falta = 0;
+                    
                     let estiloFalta = (falta > 0) ? "text-danger fw-bold" : "text-muted";
                     let valFalta = (falta > 0) ? falta : "-";
-                    const check = verif >= tot ? '<span class="badge bg-success">OK</span>' : '<span class="badge bg-secondary">Pend.</span>';
 
+                    // SIN BADGE "PENDIENTE", SOLO NÚMEROS
                     tabla.innerHTML += `
                         <tr>
-                            <td>${item}</td>
+                            <td class="text-center"><small>${item}</small></td>
                             <td>${desc}</td>
-                            <td>${tot}</td>
-                            <td>${verif} ${check}</td>
-                            <td class="${estiloFalta}">${valFalta}</td>
+                            <td class="text-center bg-light">${tot}</td>
+                            <td class="text-center fw-bold">${verif}</td>
+                            <td class="text-center ${estiloFalta}">${valFalta}</td>
                         </tr>`;
                 });
             } catch (e) { 
