@@ -92,12 +92,12 @@
     </div>
 
     <script>
-        // --- TUS ENLACES (Verifica que sean los correctos) ---
+        // --- TUS ENLACES (Verifica que no tengan espacios extra) ---
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv';
         const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv';
 
-        // --- FUNCIÓN INTELIGENTE PARA SEPARAR COMAS ---
-        // Esta función permite que las descripciones tengan comas sin romper las columnas
+        // --- FUNCIÓN PARA LEER CSV CORRECTAMENTE ---
+        // Usa Regex para respetar las comas dentro de las comillas (ej: "tuerca, hexagonal")
         function parsearCSV(texto) {
             const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
             return texto.split(regex);
@@ -117,21 +117,20 @@
 
                 filas.forEach(fila => {
                     let col = parsearCSV(fila);
-                    // Necesitamos asegurar que existan al menos 4 columnas (A, B, C, D)
+                    // Validamos que tenga al menos las 4 columnas principales
                     if(col.length < 4) return;
 
-                    // --- LECTURA EXACTA DE COLUMNAS (A, B, C, D) ---
-                    // Ignoramos todo lo que haya después de la columna D (índice 3)
-                    
-                    const cod = col[0].trim();                      // Columna A
-                    const desc = col[1].replace(/"/g, '').trim();   // Columna B (Desc)
-                    const totalRaw = col[2].replace(/"/g, '');      // Columna C (Total)
-                    const llegoRaw = col[3].replace(/"/g, '');      // Columna D (Llegó)
+                    // --- LECTURA POR POSICIÓN EXACTA (0, 1, 2, 3) ---
+                    // Ignoramos E (Falta) y F (Estado)
+                    const cod = col[0].trim();                      // Col A
+                    const desc = col[1].replace(/"/g, '').trim();   // Col B
+                    const totalRaw = col[2].replace(/"/g, '');      // Col C (Total)
+                    const llegoRaw = col[3].replace(/"/g, '');      // Col D (Llegó)
 
                     const tot = parseFloat(totalRaw) || 0;
                     const llego = parseFloat(llegoRaw) || 0;
 
-                    if (tot <= 0 && llego <= 0) return; // Si no hay nada pedido, saltar
+                    if (tot <= 0 && llego <= 0) return; // Si todo es 0, saltar
 
                     filasValidas++;
                     totalItems += tot;
@@ -169,7 +168,7 @@
                 });
 
                 if (filasValidas === 0) {
-                     tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-3">⚠️ No se leyeron datos. Verifica que la Columna C (Total) tenga números.</td></tr>';
+                     tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-3">⚠️ No se leyeron datos. Verifica la Columna C y D del Excel.</td></tr>';
                 }
 
                 // Barra
@@ -201,7 +200,7 @@
                     let col = parsearCSV(fila);
                     if(col.length < 4) return;
                     
-                    // Lectura Estricta también para herramientas
+                    // Lectura Estricta (0,1,2,3)
                     const item = col[0].trim();
                     const desc = col[1].replace(/"/g, '').trim();
                     const totalRaw = col[2].replace(/"/g, '');
