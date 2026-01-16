@@ -7,8 +7,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
-        body { background-color: #f4f6f9; padding-bottom: 50px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; padding-bottom: 80px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .card-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .header-almacen { background: linear-gradient(90deg, #0d6efd 0%, #0043a8 100%); color: white; padding: 15px 0; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .progress-bar { transition: width 1.5s ease-in-out; font-weight: bold; }
@@ -16,6 +20,15 @@
         .text-faltante { color: #dc3545; font-weight: 700; }
         .text-completo { color: #adb5bd; font-size: 0.9em; }
         .search-box { border-radius: 20px; }
+        
+        /* Botones de Exportación */
+        .btn-action { font-size: 0.85rem; margin-right: 5px; margin-bottom: 5px; border-radius: 5px; }
+        .btn-whatsapp { background-color: #25D366; color: white; border: none; }
+        .btn-whatsapp:hover { background-color: #128C7E; color: white; }
+        .btn-excel { background-color: #217346; color: white; border: none; }
+        .btn-excel:hover { background-color: #145c32; color: white; }
+        .btn-pdf { background-color: #b30b00; color: white; border: none; }
+        .btn-pdf:hover { background-color: #8f0900; color: white; }
     </style>
 </head>
 <body>
@@ -23,29 +36,36 @@
     <div class="header-almacen">
         <div class="container d-flex justify-content-between align-items-center">
             <h4 class="m-0"><i class="fas fa-boxes"></i> CONTROL DE ALMACÉN</h4>
-            <a href="index.html" class="btn btn-light btn-sm fw-bold shadow-sm"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+            <a href="index.html" class="btn btn-light btn-sm fw-bold shadow-sm"><i class="fas fa-arrow-left"></i> Volver</a>
         </div>
     </div>
 
     <div class="container">
 
-        <div class="card-box">
+        <div class="card-box" id="seccion-lote1">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="text-primary m-0"><i class="fas fa-truck-loading"></i> Recepción 1ra Entrega (Lote 1)</h5>
-                <span class="badge bg-light text-dark border">En tiempo real</span>
+                <h5 class="text-primary m-0"><i class="fas fa-truck-loading"></i> Lote 1: Estructuras</h5>
+                <span class="badge bg-light text-dark border">En vivo</span>
             </div>
             
             <div class="progress" style="height: 25px; margin-bottom: 15px; border-radius: 10px; background-color: #e9ecef;">
                 <div id="barra-lote1" class="progress-bar bg-secondary" role="progressbar" style="width: 0%;">Cargando...</div>
             </div>
 
+            <div class="mb-3 d-flex flex-wrap">
+                <button onclick="enviarWhatsApp('Lote 1', 'tabla-lote1')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> Enviar</button>
+                <button onclick="exportarExcel('tabla-lote1', 'Reporte_Lote1')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
+                <button onclick="exportarPDF('tabla-lote1', 'Reporte Lote 1')" class="btn btn-pdf btn-action"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button onclick="imprimirTabla('seccion-lote1')" class="btn btn-secondary btn-action"><i class="fas fa-print"></i> Imprimir</button>
+            </div>
+
             <div class="input-group mb-3 shadow-sm">
                 <span class="input-group-text bg-white border-end-0 search-box"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" id="buscadorInput" class="form-control border-start-0 search-box" placeholder="🔍 Buscar material... (Ej: Perno, Viga, CB200)" onkeyup="filtrarTabla()">
+                <input type="text" id="buscadorInput" class="form-control border-start-0 search-box" placeholder="🔍 Buscar en Lote 1..." onkeyup="filtrarTabla()">
             </div>
 
             <div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
-                <table class="table table-bordered table-sm table-hover mb-0" style="font-size: 0.9rem;">
+                <table class="table table-bordered table-sm table-hover mb-0" id="tabla-exportar-lote1" style="font-size: 0.9rem;">
                     <thead class="table-light" style="position: sticky; top: 0; z-index: 10;">
                         <tr class="text-center align-middle">
                             <th style="width: 15%;">Cód.</th>
@@ -57,30 +77,38 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-lote1">
-                        <tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><br>Leyendo Excel...</td></tr>
+                        <tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><br>Actualizando datos...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="card-box border-top border-4 border-info">
+        <div class="card-box border-top border-4 border-info" id="seccion-herramientas">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="text-info m-0"><i class="fas fa-tools"></i> Checklist del Kit de Herramientas</h5>
-                <button onclick="toggleHerramientas()" class="btn btn-outline-info btn-sm">Mostrar / Ocultar Detalle</button>
+                <h5 class="text-info m-0"><i class="fas fa-tools"></i> Checklist Herramientas</h5>
+                <button onclick="toggleHerramientas()" class="btn btn-outline-info btn-sm">Mostrar / Ocultar</button>
             </div>
             
-            <div id="lista-herramientas" style="display:none;">
-                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
-                    <table class="table table-striped table-sm mb-0" style="font-size: 0.9rem;">
+            <div id="lista-herramientas" style="display:block;"> <div class="mb-3 d-flex flex-wrap">
+                    <button onclick="enviarWhatsApp('Herramientas', 'tabla-herramientas')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> Enviar</button>
+                    <button onclick="exportarExcel('tabla-exportar-herramientas', 'Reporte_Herramientas')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
+                    <button onclick="exportarPDF('tabla-exportar-herramientas', 'Reporte Herramientas')" class="btn btn-pdf btn-action"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button onclick="imprimirTabla('seccion-herramientas')" class="btn btn-secondary btn-action"><i class="fas fa-print"></i> Imprimir</button>
+                </div>
+
+                <div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+                    <table class="table table-striped table-sm mb-0" id="tabla-exportar-herramientas" style="font-size: 0.9rem;">
                         <thead class="table-light" style="position: sticky; top: 0;">
                             <tr class="text-center align-middle">
                                 <th style="width: 10%;">Item</th>
                                 <th class="text-start">Herramienta</th>
-                                <th style="width: 15%;">Total</th> <th style="width: 15%;">Llegó</th> <th style="width: 15%;">Falta</th>
+                                <th style="width: 15%;">Total</th>
+                                <th style="width: 15%;">Llegó</th>
+                                <th style="width: 15%;">Falta</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-herramientas">
-                            <tr><td colspan="5" class="text-center py-3">Cargando...</td></tr>
+                            <tr><td colspan="5" class="text-center py-3">Actualizando datos...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -90,22 +118,23 @@
     </div>
 
     <script>
-        // --- TUS ENLACES ---
-        const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv';
-        const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv';
+        // === 1. ENLACES (Con Truco Anti-Caché) ===
+        // Agregamos el timestamp al final para forzar actualización
+        const timestamp = new Date().getTime();
+        const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv&t=' + timestamp;
+        const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv&t=' + timestamp;
 
-        // --- FUNCIÓN PARA LEER CSV ---
+        // === 2. FUNCIÓN DE PARSEO ===
         function parsearCSV(texto) {
             const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
             return texto.split(regex);
         }
 
-        // --- CARGAR LOTE 1 (PRINCIPAL) ---
+        // === 3. CARGAR LOTE 1 ===
         async function cargarLote1() {
             const tabla = document.getElementById('tabla-lote1');
             try {
                 const response = await fetch(URL_LOTE1);
-                if (!response.ok) throw new Error("Error conectando con Google Sheets");
                 const data = await response.text();
                 const filas = data.split(/\r?\n/).slice(1);
                 
@@ -117,7 +146,6 @@
                     let col = parsearCSV(fila);
                     if(col.length < 4) return;
 
-                    // Lectura Estricta (A, B, C, D)
                     const cod = col[0].trim();
                     const desc = col[1].replace(/"/g, '').trim();
                     const totalRaw = col[2].replace(/"/g, '');
@@ -132,19 +160,10 @@
                     totalItems += tot;
                     totalLlegados += llego;
 
-                    // Cálculos
                     let falta = tot - llego;
                     if (falta < 0) falta = 0;
                     let estiloFalta = (falta > 0) ? "text-faltante" : "text-completo";
                     let valFalta = (falta > 0) ? falta : "-";
-
-                    // Estilo Kit
-                    let claseFila = "";
-                    let icono = "";
-                    if(desc && (desc.toLowerCase().includes("kit") || desc.toLowerCase().includes("paquete"))) {
-                        claseFila = "fila-kit";
-                        icono = "📦 ";
-                    }
 
                     // Semáforo
                     let estado = "<span class='text-danger'>🔴</span>"; 
@@ -152,9 +171,9 @@
                     else if (llego > 0) estado = "🚚"; 
 
                     tabla.innerHTML += `
-                        <tr class="${claseFila}">
+                        <tr>
                             <td><small class="text-muted fw-bold">${cod}</small></td>
-                            <td>${icono}${desc}</td>
+                            <td>${desc}</td>
                             <td class="text-center bg-light">${tot}</td>
                             <td class="text-center fw-bold">${llego}</td>
                             <td class="text-center ${estiloFalta}">${valFalta}</td>
@@ -162,9 +181,7 @@
                         </tr>`;
                 });
 
-                if (filasValidas === 0) {
-                     tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-3">⚠️ No se leyeron datos. Verifica la Columna C y D del Excel.</td></tr>';
-                }
+                if (filasValidas === 0) tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger">⚠️ Sin datos. Revisa Excel.</td></tr>';
 
                 // Barra
                 const porc = totalItems > 0 ? Math.round((totalLlegados / totalItems) * 100) : 0;
@@ -176,18 +193,14 @@
                 else if(porc < 99) barra.className = "progress-bar bg-warning text-dark";
                 else barra.className = "progress-bar bg-success";
 
-            } catch (e) { 
-                console.error(e);
-                tabla.innerHTML = `<tr><td colspan="6" class="text-center text-danger p-3">Error: ${e.message}</td></tr>`;
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // --- CARGAR HERRAMIENTAS (TABLA LIMPIA) ---
+        // === 4. CARGAR HERRAMIENTAS ===
         async function cargarHerramientas() {
             const tabla = document.getElementById('tabla-herramientas');
             try {
                 const response = await fetch(URL_HERRAMIENTAS);
-                if (!response.ok) return;
                 const data = await response.text();
                 const filas = data.split(/\r?\n/).slice(1);
                 tabla.innerHTML = '';
@@ -196,9 +209,8 @@
                     let col = parsearCSV(fila);
                     if(col.length < 4) return;
                     
-                    // Lectura Estricta (A, B, C, D)
                     const item = col[0].trim();
-                    const desc = col[1].replace(/"/g, '').trim(); // Nombre limpio
+                    const desc = col[1].replace(/"/g, '').trim();
                     const totalRaw = col[2].replace(/"/g, '');
                     const verifRaw = col[3].replace(/"/g, '');
                     
@@ -207,14 +219,11 @@
                     
                     if(tot <= 0) return;
 
-                    // Cálculos
                     let falta = tot - verif;
                     if (falta < 0) falta = 0;
-                    
                     let estiloFalta = (falta > 0) ? "text-danger fw-bold" : "text-muted";
                     let valFalta = (falta > 0) ? falta : "-";
 
-                    // SIN BADGE "PENDIENTE", SOLO NÚMEROS
                     tabla.innerHTML += `
                         <tr>
                             <td class="text-center"><small>${item}</small></td>
@@ -224,27 +233,97 @@
                             <td class="text-center ${estiloFalta}">${valFalta}</td>
                         </tr>`;
                 });
-            } catch (e) { 
-                tabla.innerHTML = `<tr><td colspan="5" class="text-danger">Error cargando lista.</td></tr>`;
-            }
+            } catch (e) { console.error(e); }
         }
 
+        // === 5. FUNCIONES DE EXPORTACIÓN ===
+
+        // A. WhatsApp (Envía Resumen + Pendientes)
+        function enviarWhatsApp(nombreReporte, tablaId) {
+            let mensaje = `*REPORTE DE ALMACÉN - ${nombreReporte}*\n\n`;
+            let faltantes = [];
+            let totalGeneral = 0;
+            let totalLlegado = 0;
+
+            const filas = document.getElementById(tablaId).getElementsByTagName('tr');
+            
+            for (let i = 0; i < filas.length; i++) {
+                const celdas = filas[i].getElementsByTagName('td');
+                if (celdas.length > 2) {
+                    let desc = celdas[1].innerText;
+                    let tot = parseFloat(celdas[2].innerText) || 0;
+                    let llego = parseFloat(celdas[3].innerText) || 0;
+                    let falta = parseFloat(celdas[4].innerText) || (tot - llego);
+
+                    totalGeneral += tot;
+                    totalLlegado += llego;
+
+                    if (falta > 0 || celdas[4].innerText !== "-") {
+                        faltantes.push(`- ${desc}: Faltan ${falta}`);
+                    }
+                }
+            }
+
+            let avance = Math.round((totalLlegado / totalGeneral) * 100);
+            mensaje += `📊 *Avance Global:* ${avance}%\n`;
+            mensaje += `📦 *Recibido:* ${totalLlegado} / ${totalGeneral}\n\n`;
+            
+            if(faltantes.length > 0) {
+                mensaje += `⚠️ *PENDIENTES POR LLEGAR:*\n${faltantes.join('\n')}`;
+            } else {
+                mensaje += `✅ *¡Todo completo! No hay pendientes.*`;
+            }
+
+            let url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        // B. Excel
+        function exportarExcel(tablaId, nombreArchivo) {
+            const tabla = document.getElementById(tablaId);
+            const wb = XLSX.utils.table_to_book(tabla, {sheet: "Reporte"});
+            XLSX.writeFile(wb, `${nombreArchivo}.xlsx`);
+        }
+
+        // C. PDF
+        function exportarPDF(tablaId, titulo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.text(titulo, 14, 15);
+            doc.setFontSize(10);
+            doc.text("Generado el: " + new Date().toLocaleDateString(), 14, 22);
+
+            doc.autoTable({ html: '#' + tablaId, startY: 30 });
+            doc.save(`${titulo}.pdf`);
+        }
+
+        // D. Imprimir
+        function imprimirTabla(divId) {
+            const contenido = document.getElementById(divId).innerHTML;
+            const ventana = window.open('', '', 'height=600,width=800');
+            ventana.document.write('<html><head><title>Imprimir Reporte</title>');
+            ventana.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">');
+            ventana.document.write('</head><body><div class="container mt-4">');
+            ventana.document.write(contenido);
+            ventana.document.write('</div></body></html>');
+            ventana.document.close();
+            ventana.focus();
+            setTimeout(() => { ventana.print(); }, 1000);
+        }
+
+        // --- EXTRAS ---
         function filtrarTabla() {
             var input = document.getElementById("buscadorInput");
             var filter = input.value.toUpperCase();
             var table = document.getElementById("tabla-lote1");
             var tr = table.getElementsByTagName("tr");
-
             for (var i = 0; i < tr.length; i++) {
-                var tdCodigo = tr[i].getElementsByTagName("td")[0];
-                var tdDesc = tr[i].getElementsByTagName("td")[1];
-                if (tdCodigo || tdDesc) {
-                    var txtValue = (tdCodigo.textContent || tdCodigo.innerText) + " " + (tdDesc.textContent || tdDesc.innerText);
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
+                var td = tr[i].getElementsByTagName("td")[1]; // Buscar en descripción
+                if (td) {
+                    var txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) tr[i].style.display = "";
+                    else tr[i].style.display = "none";
                 }
             }
         }
