@@ -92,13 +92,13 @@
     </div>
 
     <script>
-        // --- TUS ENLACES ---
+        // --- TUS ENLACES (Verifica que sean los correctos) ---
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv';
         const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv';
 
-        // --- FUNCIÓN INTELIGENTE PARA LEER TU EXCEL ---
+        // --- FUNCIÓN INTELIGENTE PARA SEPARAR COMAS ---
+        // Esta función permite que las descripciones tengan comas sin romper las columnas
         function parsearCSV(texto) {
-            // Esta expresión regular separa por comas PERO ignora las comas dentro de comillas (ej: "tuerca, 2mm")
             const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
             return texto.split(regex);
         }
@@ -109,32 +109,27 @@
                 const response = await fetch(URL_LOTE1);
                 if (!response.ok) throw new Error("Error conectando con Google Sheets");
                 const data = await response.text();
-                const filas = data.split(/\r?\n/).slice(1); // Saltar encabezado
+                const filas = data.split(/\r?\n/).slice(1);
                 
                 let totalItems = 0; let totalLlegados = 0;
                 let filasValidas = 0;
                 tabla.innerHTML = '';
 
                 filas.forEach(fila => {
-                    // Usamos el parseador inteligente
                     let col = parsearCSV(fila);
-
-                    // Verificar que tenga al menos las columnas A, B, C y D
+                    // Necesitamos asegurar que existan al menos 4 columnas (A, B, C, D)
                     if(col.length < 4) return;
 
                     // --- LECTURA EXACTA DE COLUMNAS (A, B, C, D) ---
-                    const cod = col[0].trim();              // Columna A (0)
-                    const desc = col[1].replace(/"/g, '').trim(); // Columna B (1)
+                    // Ignoramos todo lo que haya después de la columna D (índice 3)
                     
-                    // Columna C (2) es TOTAL. Limpiamos comillas si las hay
-                    const totalRaw = col[2].replace(/"/g, '');
+                    const cod = col[0].trim();                      // Columna A
+                    const desc = col[1].replace(/"/g, '').trim();   // Columna B (Desc)
+                    const totalRaw = col[2].replace(/"/g, '');      // Columna C (Total)
+                    const llegoRaw = col[3].replace(/"/g, '');      // Columna D (Llegó)
+
                     const tot = parseFloat(totalRaw) || 0;
-
-                    // Columna D (3) es LLEGÓ. Limpiamos comillas si las hay
-                    const llegoRaw = col[3].replace(/"/g, '');
                     const llego = parseFloat(llegoRaw) || 0;
-
-                    // Ignoramos columnas E y F, la web calcula sola
 
                     if (tot <= 0 && llego <= 0) return; // Si no hay nada pedido, saltar
 
@@ -174,7 +169,7 @@
                 });
 
                 if (filasValidas === 0) {
-                     tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-3">⚠️ No se leyeron datos. Verifica que la columna C (Total) y D (Llegó) tengan números.</td></tr>';
+                     tabla.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-3">⚠️ No se leyeron datos. Verifica que la Columna C (Total) tenga números.</td></tr>';
                 }
 
                 // Barra
@@ -206,11 +201,14 @@
                     let col = parsearCSV(fila);
                     if(col.length < 4) return;
                     
-                    const item = col[0].trim(); // A
-                    const desc = col[1].replace(/"/g, '').trim(); // B
+                    // Lectura Estricta también para herramientas
+                    const item = col[0].trim();
+                    const desc = col[1].replace(/"/g, '').trim();
+                    const totalRaw = col[2].replace(/"/g, '');
+                    const verifRaw = col[3].replace(/"/g, '');
                     
-                    const tot = parseFloat(col[2].replace(/"/g, '')) || 0; // C
-                    const verif = parseFloat(col[3].replace(/"/g, '')) || 0; // D
+                    const tot = parseFloat(totalRaw) || 0;
+                    const verif = parseFloat(verifRaw) || 0;
                     
                     if(tot <= 0) return;
 
