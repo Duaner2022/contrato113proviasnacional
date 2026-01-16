@@ -61,10 +61,10 @@
                 <table class="table table-hover table-sm mb-0" id="tabla-exportar-obligaciones" style="font-size: 0.9rem;">
                     <thead class="table-light">
                         <tr>
-                            <th width="5%">#</th>
-                            <th width="45%">Obligación Contractual</th>
-                            <th width="15%" class="text-center">Límite</th>
-                            <th width="15%" class="text-center">Presentación</th>
+                            <th width="5%" class="text-center">Item</th>
+                            <th width="45%">Obligacion</th>
+                            <th width="15%" class="text-center">Fecha_Limite</th>
+                            <th width="15%" class="text-center">Fecha_Presentacion</th>
                             <th width="20%" class="text-center">Estado</th>
                         </tr>
                     </thead>
@@ -156,7 +156,6 @@
         // ====================== TUS ENLACES ======================
         const timestamp = new Date().getTime(); // Truco anti-caché
         
-        // ENLACE DE OBLIGACIONES (PUESTO POR TI)
         const URL_OBLIGACIONES = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=0&single=true&output=csv&t=' + timestamp;
         
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv&t=' + timestamp;
@@ -174,10 +173,11 @@
             try {
                 const response = await fetch(URL_OBLIGACIONES);
                 const data = await response.text();
-                const filas = data.split(/\r?\n/).slice(1);
+                // Ojo: Aquí quitamos slice(1) para asegurarnos de controlar nosotros qué fila es header
+                const filas = data.split(/\r?\n/);
                 tabla.innerHTML = '';
 
-                filas.forEach(fila => {
+                filas.forEach((fila, index) => {
                     let col = parsearCSV(fila);
                     if(col.length < 5) return; 
 
@@ -187,6 +187,12 @@
                     const fechaLim = col[2].replace(/"/g, '').trim();
                     const fechaPres = col[3].replace(/"/g, '').trim();
                     const estado = col[4].replace(/"/g, '').trim();
+
+                    // --- FILTRO: SI ES EL TÍTULO, LO SALTAMOS ---
+                    // Esto evita que se repita la fila de encabezados dentro de la tabla
+                    if (item.toLowerCase() === 'item' || desc.toLowerCase() === 'obligacion' || item === 'A') {
+                        return;
+                    }
 
                     // Colores de estado
                     let badgeClass = "bg-secondary";
