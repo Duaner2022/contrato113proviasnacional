@@ -53,6 +53,7 @@
             </div>
 
             <div class="mb-2">
+                <button onclick="enviarWhatsAppObligaciones()" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WhatsApp</button>
                 <button onclick="exportarExcel('tabla-obligaciones', 'Reporte_Obligaciones')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
                 <button onclick="imprimirTabla('seccion-obligaciones')" class="btn btn-secondary btn-action"><i class="fas fa-print"></i> Imprimir</button>
             </div>
@@ -154,8 +155,9 @@
 
     <script>
         // ====================== TUS ENLACES ======================
-        const timestamp = new Date().getTime(); // Truco anti-caché
+        const timestamp = new Date().getTime(); // Truco anti-caché GLOBAL
         
+        // Se aplica el timestamp a los 3 enlaces para actualización instantánea
         const URL_OBLIGACIONES = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=0&single=true&output=csv&t=' + timestamp;
         
         const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv&t=' + timestamp;
@@ -173,7 +175,6 @@
             try {
                 const response = await fetch(URL_OBLIGACIONES);
                 const data = await response.text();
-                // Ojo: Aquí quitamos slice(1) para asegurarnos de controlar nosotros qué fila es header
                 const filas = data.split(/\r?\n/);
                 tabla.innerHTML = '';
 
@@ -188,11 +189,8 @@
                     const fechaPres = col[3].replace(/"/g, '').trim();
                     const estado = col[4].replace(/"/g, '').trim();
 
-                    // --- FILTRO: SI ES EL TÍTULO, LO SALTAMOS ---
-                    // Esto evita que se repita la fila de encabezados dentro de la tabla
-                    if (item.toLowerCase() === 'item' || desc.toLowerCase() === 'obligacion' || item === 'A') {
-                        return;
-                    }
+                    // Ignorar títulos
+                    if (item.toLowerCase() === 'item' || desc.toLowerCase() === 'obligacion') return;
 
                     // Colores de estado
                     let badgeClass = "bg-secondary";
@@ -312,7 +310,9 @@
             } catch (e) { console.error(e); }
         }
 
-        // --- EXPORTACIÓN ---
+        // --- EXPORTACIÓN (WhatsApp / Excel / PDF) ---
+
+        // A. WhatsApp GENERAL (Para Lote 1 y Herramientas)
         function enviarWhatsApp(nombreReporte, tablaId) {
             let mensaje = `*REPORTE: ${nombreReporte}*\n\n`;
             let faltantes = [];
@@ -334,6 +334,32 @@
             mensaje += `📊 *Avance:* ${avance}%\n📦 *Recibido:* ${totalLlegado}/${totalGeneral}\n\n`;
             if(faltantes.length > 0) mensaje += `⚠️ *PENDIENTES:*\n${faltantes.join('\n')}`;
             else mensaje += `✅ *¡Todo completo!*`;
+
+            window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+        }
+
+        // B. WhatsApp OBLIGACIONES (Especial)
+        function enviarWhatsAppObligaciones() {
+            let mensaje = `*📅 REPORTE DE OBLIGACIONES*\n\n`;
+            let pendientes = [];
+            const filas = document.getElementById('tabla-obligaciones').getElementsByTagName('tr');
+            
+            for (let i = 0; i < filas.length; i++) {
+                const celdas = filas[i].getElementsByTagName('td');
+                if (celdas.length > 4) {
+                    let desc = celdas[1].innerText;
+                    let fecha = celdas[2].innerText;
+                    let estado = celdas[4].innerText;
+                    
+                    // Solo listar si está pendiente o en proceso
+                    if(estado.includes("Pendiente") || estado.includes("Proceso")) {
+                        pendientes.push(`- ${desc} (${estado})\n  📅 Vence: ${fecha}`);
+                    }
+                }
+            }
+            
+            if(pendientes.length > 0) mensaje += `⚠️ *ATENCIÓN (Próximos Vencimientos):*\n\n${pendientes.join('\n\n')}`;
+            else mensaje += `✅ *¡Todo en orden! No hay obligaciones pendientes.*`;
 
             window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
