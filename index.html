@@ -194,7 +194,7 @@
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td class="txt-left">5. Entrega Doc. Técnica Prestacion Adicional N°01:: dos (02) originales de cada uno</td>
+                        <td class="txt-left">5. Entrega Doc. Técnica Prestacion Adicional N°01</td>
                         <td>90 dc</td>
                         <td class="txt-red">28-Mar-2026</td>
                         <td class="txt-bold">27-Abr-2026</td>
@@ -217,12 +217,10 @@
         <h4>⚠️ NOTAS IMPORTANTES DEL PROYECTO</h4>
         <ul>
             <li>Tener presente que en este proyecto las pasarelas peatonales son de 1.2m.</li>
-            <li>Para la revisión del dossier de calidad de cada entrega, nos deben enviar escaneados antes para la revisión, luego enviar los originales vía aérea antes de la fecha zarpe de las estructuras.</li>
-            <li>Todo el personal que ingrese Almacén, aduanas deben tener sus EPPS completos y su SCTR Actualizados.</li>
+            <li>Para la revisión del dossier de calidad de cada entrega, nos deben enviar escaneados antes para la revisión.</li>
+            <li>Todo el personal que ingrese Almacén y aduanas debe tener sus EPP completos y SCTR Actualizados.</li>
             <li>Se tiene que tener los relojes con certificados de calibración vigente.</li>
-            <li>Comprar nuevo Termohigrómetro (temperatura y humedad), con certificados de calibración vigente.</li>
-            <li>Cuando llegan los 02 medidores de espesores de Galvanizado (1era entrega), se tiene que calibrar y tener certificación vigente acá en Perú.</li>
-            <li>Para los Ensayos de materiales (FINALIZADA LA ENTREGA), se tiene que coordinar 1 mes antes con la Empresa Soldex acá en Perú.</li>
+            <li>Comprar nuevo Termohigrómetro con certificado de calibración vigente.</li>
         </ul>
     </div>
 </div>
@@ -248,46 +246,46 @@ document.addEventListener("DOMContentLoaded", function() {
         // --- DATOS TARJETAS ---
         const data = [
             {
-                t: "1. Documentación Técnica: dos (02) originales de cada uno",
+                t: "1. Documentación Técnica",
                 plazo: "90 Días Calendario",
-                p: [2026, 1, 13], 
-                l: [2026, 2, 15], 
-                h: "<li>Manual de montaje y Lanzamiento</li><li>Manual Técnico de Operación y Mantenimiento</li><li>Manual Técnico de componentes</li><li>Planos físicos y digitales</li><li>Video de usos e instalación</li><li>Memoria de Cálculo.</li>"
+                p: [2026, 1, 13], // 13 Feb
+                l: [2026, 2, 15], // 15 Mar
+                h: "<li>Manual de montaje y Lanzamiento</li><li>Planos físicos y digitales</li><li>Memoria de Cálculo.</li>"
             },
             {
                 t: "2. 1ra Entrega (Lote 1)",
                 plazo: "150 Días Calendario",
-                p: [2026, 3, 14], 
-                l: [2026, 4, 14], 
-                h: "<li class='check'>08 puentes de 15m s/p</li><li class='check'>08 puentes de 21m s/p</li><li class='check'>10 puentes de 27m s/p</li><li class='check'>10 puentes de 39m s/p</li><li class='check'>01 puentes de 60m s/p</li><li>Dossier de calidad</li><li>Prueba de carga</li>"
+                p: [2026, 3, 14], // 14 Abr
+                l: [2026, 4, 14], // 14 May
+                h: "<li class='check'>08 puentes de 15m s/p</li><li>Dossier de calidad</li><li>Prueba de carga</li>"
             },
             {
                 t: "3. 2da Entrega (Lote 2)",
                 plazo: "200 Días Calendario",
-                p: [2026, 5, 3], 
-                l: [2026, 6, 3], 
-                h: "<li class='check'>05 puentes de 60m s/p</li><li class='check'>05 puentes de 60m c/p</li><li class='check'>02 puentes de 15m doble vía</li><li class='check'>04 puentes de 21m doble vía</li><li>Dossier de calidad</li><li>Capacitación técnica (Grupo 1)</li>"
+                p: [2026, 5, 3],  // 03 Jun
+                l: [2026, 6, 3],  // 03 Jul
+                h: "<li>05 puentes de 60m s/p</li><li>Capacitación técnica (Grupo 1)</li>"
             },
             {
                 t: "4. 3era Entrega (Lote 3)",
                 plazo: "240 Días Calendario",
-                p: [2026, 6, 13], 
-                l: [2026, 7, 12], 
-                h: "<li class='check'>04 puentes de 27m doble vía</li><li class='check'>04 puentes de 39m doble vía</li><li class='check'>04 puentes de 60m doble vía</li><li>Narices doble vía</li><li>Dossier de calidad</li><li>Capacitación técnica (Grupo 2)</li>"
+                p: [2026, 6, 13], // 13 Jul
+                l: [2026, 7, 12], // 12 Ago
+                h: "<li>04 puentes de 27m doble vía</li><li>Dossier de calidad</li>"
             },
             {
-                t: "5. Entrega Doc. Técnica Prestacion Adicional N°01:: dos (02) originales de cada uno",
+                t: "5. Entrega Doc. Técnica Adicional N°01",
                 plazo: "90 Días Calendario (Adicional)",
-                p: [2026, 2, 29], // Sáb 29 Mar 2026 (JavaScript meses 0-11, 2 = Marzo)
+                p: [2026, 2, 28], // CORREGIDO: 28 Marzo
                 l: [2026, 3, 27], // 27 Abril
-                h: "<li>Documentación técnica específica para el Adicional N°01.</li><li>Planos y Memorias de cálculo actualizadas.</li><li>Cronograma de ejecución del adicional.</li>"
+                h: "<li>Documentación técnica específica para el Adicional N°01.</li>"
             },
             {
-                t: "6. Prestacion Adicional N°01 (Unica Entrega)",
+                t: "6. Prestacion Adicional N°01 (Unica)",
                 plazo: "240 Días Calendario (Adicional)",
-                p: [2026, 7, 26], 
-                l: [2026, 8, 24], 
-                h: "<li>Suministro total de componentes correspondientes al Adicional N°01.</li><li>Dossier de calidad del adicional.</li><li>Pruebas de materiales específicas.</li>"
+                p: [2026, 7, 25], // CORREGIDO: 25 Agosto
+                l: [2026, 8, 24], // 24 Septiembre
+                h: "<li>Suministro total de componentes Adicional N°01.</li>"
             }
         ];
 
@@ -306,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function() {
             let cL = 's-ok'; if(difL <= 30) cL = 's-warn'; if(difL <= 7) cL = 's-dang';
             const fDate = d => `${ds[d.getDay()]} ${d.getDate()} ${ms[d.getMonth()]} ${d.getFullYear()}`;
             const iso = dL.toISOString().slice(0,10).replace(/-/g,"");
-            const cal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(item.t)}&dates=${iso}/${iso}&details=${encodeURIComponent("Plazo Contractual: " + item.plazo)}`;
+            const cal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(item.t)}&dates=${iso}/${iso}`;
 
             html += `
             <div class="card" id="c${i}">
@@ -317,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <div class="stats">
                         <div class="stat-box ${cP}">
                             <span class="stat-lbl">🔔 ALERTA PLANEAMIENTO<br>(30 DÍAS ANTES)</span>
-                            <span class="stat-val">${difP < 0 ? '--' : difP}</span>
+                            <span class="stat-val">${difP < 0 ? 'ALERTA' : difP}</span>
                             <span class="stat-desc">Días Cal. Restantes</span>
                             <span class="stat-date">${fDate(dP)}</span>
                         </div>
@@ -352,12 +350,12 @@ function shareWS() {
     let msg = "*REPORTE EJECUTIVO CONSORCIO HARZONE- KAYSUN - CONTRATO 113*\n\n";
     const today = new Date(); today.setHours(0,0,0,0);
     const items = [
-        {n:"Doc. Técnica", d:new Date(2026,2,15), p:"90 Días"},
-        {n:"1ra Entrega", d:new Date(2026,4,14), p:"150 Días"},
-        {n:"2da Entrega", d:new Date(2026,6,3), p:"200 Días"},
-        {n:"3ra Entrega", d:new Date(2026,7,12), p:"240 Días"},
-        {n:"Doc. Técnica Adic. 01", d:new Date(2026,3,27), p:"90 Días"},
-        {n:"Adic. 01 (Unica)", d:new Date(2026,8,24), p:"240 Días"}
+        {n:"Doc. Técnica", d:new Date(2026,2,15)},
+        {n:"1ra Entrega", d:new Date(2026,4,14)},
+        {n:"2da Entrega", d:new Date(2026,6,3)},
+        {n:"3ra Entrega", d:new Date(2026,7,12)},
+        {n:"Doc. Técnica Adic. 01", d:new Date(2026,3,27)},
+        {n:"Adic. 01 (Unica)", d:new Date(2026,8,24)}
     ];
     items.forEach(i => {
         const r = Math.ceil((i.d - today)/86400000);
@@ -369,4 +367,3 @@ function shareWS() {
 </script>
 </body>
 </html>
-
