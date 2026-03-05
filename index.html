@@ -248,10 +248,11 @@ document.addEventListener("DOMContentLoaded", function() {
         // --- DATOS TARJETAS ---
         const data = [
             {
-                t: "1. Documentación Técnica: dos (02) originales de cada uno",
-                plazo: "90 Días Calendario",
-                p: [2026, 1, 13], 
-                l: [2026, 2, 15], 
+                t: "✅1. Documentación Técnica: dos (02) originales de cada uno - (ENTREGADO EL 04-MAR-2026)",// Cambiamos el título
+        plazo: "90 Días Calendario",
+        p: [2026, 2, 15], // Mantenemos la fecha para el historial
+        l: [2026, 2, 15], 
+        entregado: true,  // <-- Agregamos esta marca para que el sistema sepa
                 h: "<li>Manual de montaje (Instalación) y Lanzamiento</li><li>Manual Técnico de Operación y Mantenimiento</li><li>Manual Técnico (Catálogo) de componentes</li><li>Los planos en versión física y digital (AutoCAD editable)</li><li>Video de usos e instalación (>10 min, español/subtitulado)</li><li>Memoria de Cálculo.</li>"
             },
             {
@@ -369,4 +370,5 @@ function shareWS() {
 </script>
 </body>
 </html>
+
 
