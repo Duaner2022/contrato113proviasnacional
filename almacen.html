@@ -40,25 +40,45 @@
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #0d6efd;">
                 <h6 class="text-primary fw-bold">Lote 1: Estructuras</h6>
-                <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-lote1"></tbody></table></div>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-lote1"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #6610f2;">
                 <h6 style="color: #6610f2;" class="fw-bold">Lote 2: Estructuras</h6>
-                <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-lote2"></tbody></table></div>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-lote2"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #0dcaf0;">
                 <h6 class="text-info fw-bold">Lote 3: Estructuras</h6>
-                <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-lote3"></tbody></table></div>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-lote3"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #dc3545;">
                 <h6 class="text-danger fw-bold">Adicional</h6>
-                <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-adicional"></tbody></table></div>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-adicional"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -67,13 +87,23 @@
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #198754;">
                 <h6 class="text-success fw-bold">Herramientas LOTE 1</h6>
-                <div class="table-scroll"><table class="table table-sm"><tbody id="herra-l1"></tbody></table></div>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="herra-l1"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #198754;">
                 <h6 class="text-success fw-bold">Herramientas LOTE 3</h6>
-                <div class="table-scroll"><table class="table table-sm"><tbody id="herra-l3"></tbody></table></div>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="herra-l3"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -82,15 +112,14 @@
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv';
     
-    // GIDs EXTRAÍDOS DE TUS IMÁGENES
     const GIDS = {
         OBLIG: '0', 
         L1: '1555920355', 
-        L2: '1584833780', // Corregido según imagen_167bff
+        L2: '1584833780', 
         L3: '948956372', 
-        ADIC: '404296762', // GID estimado para Adicional
+        ADIC: '404296762', 
         H1: '438228635',
-        H3: '533666501'  // Corregido según imagen_14b20a
+        H3: '533666501' 
     };
 
     async function cargar(gid, elementId, modo) {
@@ -111,10 +140,11 @@
                     const total = parseInt(c[2]) || 0;
                     const llego = parseInt(c[3]) || 0;
                     const falta = total - llego;
-                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${total}</td><td>${llego}</td><td class="text-danger fw-bold">${falta}</td><td>${falta===0?'🟢':'🔴'}</td></tr>`;
+                    const estadoIcono = falta === 0 ? '🟢' : '🔴';
+                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${total}</td><td>${llego}</td><td class="text-danger fw-bold">${falta}</td><td>${estadoIcono}</td></tr>`;
                 }
             });
-            document.getElementById(elementId).innerHTML = html || '<tr><td colspan="5">No hay datos</td></tr>';
+            document.getElementById(elementId).innerHTML = html || '<tr><td colspan="6">No hay datos</td></tr>';
         } catch (e) { console.error("Error en " + elementId); }
     }
 
