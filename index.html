@@ -276,17 +276,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 h: "<li class='check'>04 puentes de 27m doble vía</li><li class='check'>04 puentes de 39m doble vía</li><li class='check'>04 puentes de 60m doble vía</li><li>Narices doble vía</li><li>Dossier de calidad</li><li>Capacitación técnica (Grupo 2)</li>"
             },
             {
-                t: "5. Entrega Doc. Técnica Prestacion Adicional N°01",
+                t: "5. Entrega Doc. Técnica Prestacion Adicional N°01:: dos (02) originales de cada uno",
                 plazo: "90 Días Calendario (Adicional)",
-                p: [2026, 2, 28], // Planeamiento: 28 Marzo
-                l: [2026, 3, 27], // Límite: 27 Abril
+                p: [2026, 2, 28], // 28 Marzo
+                l: [2026, 3, 27], // 27 Abril
                 h: "<li>Documentación técnica específica para el Adicional N°01.</li><li>Planos y Memorias de cálculo actualizadas.</li><li>Cronograma de ejecución del adicional.</li>"
             },
             {
                 t: "6. Prestacion Adicional N°01 (Unica Entrega)",
                 plazo: "240 Días Calendario (Adicional)",
-                p: [2026, 7, 25], // Planeamiento: 25 Agosto
-                l: [2026, 8, 24], // Límite: 24 Septiembre
+                p: [2026, 7, 26], 
+                l: [2026, 8, 24], 
                 h: "<li>Suministro total de componentes correspondientes al Adicional N°01.</li><li>Dossier de calidad del adicional.</li><li>Pruebas de materiales específicas.</li>"
             }
         ];
@@ -338,3 +338,34 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>`;
         });
         if(cont) cont.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+    }
+});
+
+function toggle(id) {
+    const el = document.getElementById('c'+id);
+    if(el) el.classList.toggle('open');
+}
+
+function shareWS() {
+    let msg = "*REPORTE EJECUTIVO CONSORCIO HARZONE- KAYSUN - CONTRATO 113*\n\n";
+    const today = new Date(); today.setHours(0,0,0,0);
+    const items = [
+        {n:"Doc. Técnica", d:new Date(2026,2,15), p:"90 Días"},
+        {n:"1ra Entrega", d:new Date(2026,4,14), p:"150 Días"},
+        {n:"2da Entrega", d:new Date(2026,6,3), p:"200 Días"},
+        {n:"3ra Entrega", d:new Date(2026,7,12), p:"240 Días"},
+        {n:"Doc. Técnica Adic. 01", d:new Date(2026,3,27), p:"90 Días"},
+        {n:"Adic. 01 (Unica)", d:new Date(2026,8,24), p:"240 Días"}
+    ];
+    items.forEach(i => {
+        const r = Math.ceil((i.d - today)/86400000);
+        const icon = r < 30 ? "⚠️" : "✅";
+        msg += `${icon} *${i.n}*\n🗓️ Vence: ${i.d.getDate()}/${i.d.getMonth()+1}/${i.d.getFullYear()}\n⏳ Restan: ${r} Días\n\n`;
+    });
+    window.open("https://wa.me/?text=" + encodeURIComponent(msg));
+}
+</script>
+</body>
+</html>
