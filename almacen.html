@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almacén y Obligaciones | Contrato 113</title>
+    <title>Control Maestro | Contrato 113</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -12,24 +12,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        body { background-color: #f4f6f9; padding-bottom: 80px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .header-almacen { background: linear-gradient(90deg, #0043a8 0%, #0d6efd 100%); color: white; padding: 15px 0; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        body { background-color: #f4f6f9; padding-bottom: 80px; font-family: 'Segoe UI', sans-serif; }
+        .card-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .header-almacen { background: linear-gradient(90deg, #002f7a 0%, #0d6efd 100%); color: white; padding: 15px 0; margin-bottom: 25px; sticky: top; z-index: 1000; }
         .progress-bar { transition: width 1.5s ease-in-out; font-weight: bold; }
-        
-        /* Estilos Tablas */
-        .fila-kit { background-color: #e7f1ff !important; font-weight: bold; border-left: 4px solid #0d6efd; }
         .text-faltante { color: #dc3545; font-weight: 700; }
         .text-completo { color: #adb5bd; font-size: 0.9em; }
-        .search-box { border-radius: 20px; }
-
-        /* Botones */
-        .btn-action { font-size: 0.8rem; margin-right: 4px; margin-bottom: 5px; border-radius: 4px; }
+        .btn-action { font-size: 0.75rem; margin-right: 4px; margin-bottom: 5px; }
         .btn-whatsapp { background-color: #25D366; color: white; border: none; }
         .btn-excel { background-color: #217346; color: white; border: none; }
         .btn-pdf { background-color: #b30b00; color: white; border: none; }
-
-        /* Badges de Estado Obligaciones */
+        .table-scroll { max-height: 350px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; }
         .badge-pendiente { background-color: #dc3545; color: white; }
         .badge-proceso { background-color: #ffc107; color: black; }
         .badge-cumplido { background-color: #198754; color: white; }
@@ -37,372 +30,168 @@
 </head>
 <body>
 
-    <div class="header-almacen">
+    <div class="header-almacen shadow">
         <div class="container d-flex justify-content-between align-items-center">
-            <h4 class="m-0"><i class="fas fa-clipboard-list"></i> CONTROL 113</h4>
-            <a href="index.html" class="btn btn-light btn-sm fw-bold shadow-sm"><i class="fas fa-home"></i> Inicio</a>
+            <h4 class="m-0"><i class="fas fa-layer-group"></i> PANEL DE CONTROL CONTRATO 113</h4>
+            <span class="badge bg-light text-dark">Usuario: Williams (dw)</span>
         </div>
     </div>
 
     <div class="container">
 
         <div class="card-box border-start border-4 border-warning" id="seccion-obligaciones">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="text-dark m-0"><i class="far fa-calendar-alt text-warning"></i> Control de Obligaciones</h5>
-                <span class="badge bg-warning text-dark">Plazos</span>
-            </div>
-
+            <h5><i class="far fa-calendar-alt text-warning"></i> Control de Obligaciones</h5>
             <div class="mb-2">
-                <button onclick="enviarWhatsAppObligaciones()" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-                <button onclick="exportarExcel('tabla-exportar-obligaciones', 'Reporte_Obligaciones')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="imprimirTabla('seccion-obligaciones')" class="btn btn-secondary btn-action"><i class="fas fa-print"></i> Imprimir</button>
+                <button onclick="enviarWhatsAppObligaciones()" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> Reporte Pendientes</button>
             </div>
-
             <div class="table-responsive">
-                <table class="table table-hover table-sm mb-0" id="tabla-exportar-obligaciones" style="font-size: 0.9rem;">
+                <table class="table table-hover table-sm mb-0" style="font-size: 0.85rem;">
                     <thead class="table-light">
-                        <tr>
-                            <th width="5%" class="text-center">Item</th>
-                            <th width="35%">Obligacion</th>
-                            <th width="15%" class="text-center">Fecha_Limite</th>
-                            <th width="15%" class="text-center">Días Restantes</th> 
-                            <th width="15%" class="text-center">Fecha_Presentacion</th>
-                            <th width="15%" class="text-center">Estado</th>
-                        </tr>
+                        <tr><th>Item</th><th>Obligación</th><th class="text-center">Límite</th><th class="text-center">Plazo</th><th class="text-center">Estado</th></tr>
                     </thead>
-                    <tbody id="tabla-obligaciones">
-                        <tr><td colspan="6" class="text-center py-3 text-muted">Cargando cronograma...</td></tr>
-                    </tbody>
+                    <tbody id="tabla-obligaciones"></tbody>
                 </table>
             </div>
         </div>
 
-        <div class="card-box" id="seccion-lote1">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="text-primary m-0"><i class="fas fa-truck-loading"></i> Lote 1: Estructuras</h5>
-                <span class="badge bg-light text-dark border">En tiempo real</span>
-            </div>
-            
-            <div class="progress" style="height: 25px; margin-bottom: 15px; border-radius: 10px; background-color: #e9ecef;">
-                <div id="barra-lote1" class="progress-bar bg-secondary" role="progressbar" style="width: 0%;">Cargando...</div>
-            </div>
-
-            <div class="mb-3 d-flex flex-wrap">
-                <button onclick="enviarWhatsApp('Lote 1', 'tabla-lote1')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-                <button onclick="exportarExcel('tabla-exportar-lote1', 'Reporte_Lote1')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="exportarPDF('tabla-exportar-lote1', 'Reporte Lote 1')" class="btn btn-pdf btn-action"><i class="fas fa-file-pdf"></i> PDF</button>
-                <button onclick="imprimirTabla('seccion-lote1')" class="btn btn-secondary btn-action"><i class="fas fa-print"></i> Imprimir</button>
-            </div>
-
-            <div class="input-group mb-3 shadow-sm">
-                <span class="input-group-text bg-white border-end-0 search-box"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" id="buscadorInput" class="form-control border-start-0 search-box" placeholder="🔍 Buscar material..." onkeyup="filtrarTabla()">
-            </div>
-
-            <div style="max-height: 450px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
-                <table class="table table-bordered table-sm table-hover mb-0" id="tabla-exportar-lote1" style="font-size: 0.9rem;">
-                    <thead class="table-light" style="position: sticky; top: 0; z-index: 10;">
-                        <tr class="text-center align-middle">
-                            <th width="15%">Cód.</th>
-                            <th class="text-start">Descripción</th>
-                            <th width="10%">Total</th>
-                            <th width="10%">Llegó</th>
-                            <th width="10%">Falta</th>
-                            <th width="10%">Est.</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-lote1">
-                        <tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card-box border-top border-4 border-info" id="seccion-herramientas">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="text-info m-0"><i class="fas fa-tools"></i> Checklist Herramientas</h5>
-                <button onclick="toggleHerramientas()" class="btn btn-outline-info btn-sm">Ver Detalle</button>
-            </div>
-            
-            <div id="lista-herramientas" style="display:block;">
-                <div class="mb-3 d-flex flex-wrap">
-                    <button onclick="enviarWhatsApp('Herramientas', 'tabla-herramientas')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-                    <button onclick="exportarExcel('tabla-exportar-herramientas', 'Reporte_Herramientas')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
-                    <button onclick="exportarPDF('tabla-exportar-herramientas', 'Reporte Herramientas')" class="btn btn-pdf btn-action"><i class="fas fa-file-pdf"></i> PDF</button>
-                    <button onclick="imprimirTabla('seccion-herramientas')" class="btn btn-secondary btn-action"><i class="fas fa-print"></i> Imprimir</button>
+        <div id="contenedor-lotes">
+            <div class="card-box" id="seccion-lote1">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="text-primary"><i class="fas fa-box"></i> Lote 1: Estructuras</h5>
+                    <div class="progress w-50" style="height: 20px;"><div id="barra-lote1" class="progress-bar bg-success" style="width: 0%">0%</div></div>
                 </div>
+                <div class="mt-3 mb-2">
+                    <button onclick="enviarWhatsApp('Lote 1', 'tabla-lote1')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WA</button>
+                    <button onclick="exportarExcel('tabla-exportar-lote1', 'Lote1')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+                <div class="table-scroll">
+                    <table class="table table-bordered table-sm mb-0" id="tabla-exportar-lote1" style="font-size: 0.85rem;">
+                        <thead class="table-light sticky-top"><tr><th>Cód</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Est</th></tr></thead>
+                        <tbody id="tabla-lote1"></tbody>
+                    </table>
+                </div>
+            </div>
 
-                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
-                    <table class="table table-striped table-sm mb-0" id="tabla-exportar-herramientas" style="font-size: 0.9rem;">
-                        <thead class="table-light" style="position: sticky; top: 0;">
-                            <tr class="text-center align-middle">
-                                <th width="10%">Item</th>
-                                <th class="text-start">Herramienta</th>
-                                <th width="15%">Total</th>
-                                <th width="15%">Llegó</th>
-                                <th width="15%">Falta</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-herramientas">
-                            <tr><td colspan="5" class="text-center py-3">Cargando...</td></tr>
-                        </tbody>
+            <div class="card-box" id="seccion-lote2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="text-primary"><i class="fas fa-box"></i> Lote 2: Componentes</h5>
+                    <div class="progress w-50" style="height: 20px;"><div id="barra-lote2" class="progress-bar bg-primary" style="width: 0%">0%</div></div>
+                </div>
+                <div class="mt-3 mb-2">
+                    <button onclick="enviarWhatsApp('Lote 2', 'tabla-lote2')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WA</button>
+                    <button onclick="exportarExcel('tabla-exportar-lote2', 'Lote2')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+                <div class="table-scroll">
+                    <table class="table table-bordered table-sm mb-0" id="tabla-exportar-lote2" style="font-size: 0.85rem;">
+                        <thead class="table-light sticky-top"><tr><th>Cód</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Est</th></tr></thead>
+                        <tbody id="tabla-lote2"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-box" id="seccion-lote3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="text-primary"><i class="fas fa-box"></i> Lote 3: Acabados</h5>
+                    <div class="progress w-50" style="height: 20px;"><div id="barra-lote3" class="progress-bar bg-info" style="width: 0%">0%</div></div>
+                </div>
+                <div class="mt-3 mb-2">
+                    <button onclick="enviarWhatsApp('Lote 3', 'tabla-lote3')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WA</button>
+                    <button onclick="exportarExcel('tabla-exportar-lote3', 'Lote3')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
+                </div>
+                <div class="table-scroll">
+                    <table class="table table-bordered table-sm mb-0" id="tabla-exportar-lote3" style="font-size: 0.85rem;">
+                        <thead class="table-light sticky-top"><tr><th>Cód</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Est</th></tr></thead>
+                        <tbody id="tabla-lote3"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-box border-start border-4 border-danger" id="seccion-adicional">
+                <h5 class="text-danger"><i class="fas fa-plus-circle"></i> Adicionales y Repuestos</h5>
+                <div class="table-scroll">
+                    <table class="table table-striped table-sm mb-0" id="tabla-exportar-adicional" style="font-size: 0.85rem;">
+                        <thead class="table-light"><tr><th>Cód</th><th>Descripción</th><th>Cant</th><th>Estado</th></tr></thead>
+                        <tbody id="tabla-adicional"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-box border-top border-4 border-success" id="seccion-herramientas">
+                <h5 class="text-success"><i class="fas fa-tools"></i> Checklist Herramientas</h5>
+                <div class="table-scroll">
+                    <table class="table table-sm mb-0" id="tabla-exportar-herramientas" style="font-size: 0.85rem;">
+                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Fisico</th><th>Falta</th></tr></thead>
+                        <tbody id="tabla-herramientas"></tbody>
                     </table>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
-        const timestamp = new Date().getTime(); 
+        const base_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv&t=' + new Date().getTime();
         
-        const URL_OBLIGACIONES = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=0&single=true&output=csv&t=' + timestamp;
-        const URL_LOTE1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=1555920355&single=true&output=csv&t=' + timestamp;
-        const URL_HERRAMIENTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?gid=438228635&single=true&output=csv&t=' + timestamp;
+        // GIDs específicos (Ajustar según tu Excel real)
+        const GIDS = {
+            OBLIG: '0',
+            LOTE1: '1555920355',
+            LOTE2: '123456789', // Ejemplo: Cambia por el GID real del Lote 2
+            LOTE3: '987654321', // Ejemplo: Cambia por el GID real del Lote 3
+            ADIC: '111222333',  // Ejemplo: Cambia por el GID real de Adicionales
+            HERRA: '438228635'
+        };
 
-        function parsearCSV(linea) {
-            const campos = [];
-            let campoActual = '';
-            let enComillas = false;
-            for (let i = 0; i < linea.length; i++) {
-                let char = linea[i];
-                if (char === '"' && linea[i+1] === '"') { campoActual += '"'; i++; }
-                else if (char === '"') { enComillas = !enComillas; }
-                else if (char === ',' && !enComillas) { campos.push(campoActual); campoActual = ''; }
-                else { campoActual += char; }
-            }
-            campos.push(campoActual);
-            return campos;
-        }
-
-        async function cargarObligaciones() {
-            const tabla = document.getElementById('tabla-obligaciones');
-            try {
-                const response = await fetch(URL_OBLIGACIONES);
-                const data = await response.text();
-                const filas = data.split(/\r?\n/);
-                tabla.innerHTML = '';
-
-                filas.forEach((fila, index) => {
-                    let col = parsearCSV(fila);
-                    if(col.length < 5) return; 
-
-                    const item = col[0].trim();
-                    const desc = col[1].trim();
-                    const fechaLim = col[2].trim();
-                    const fechaPres = col[3].trim();
-                    const estado = col[4].trim();
-
-                    if (item.toLowerCase() === 'item' || desc.toLowerCase() === 'obligacion') return;
-
-                    let plazoTexto = "-";
-                    let plazoClass = "bg-light text-dark";
-
-                    if (estado.toLowerCase() !== "cumplido" && fechaLim.includes("/")) {
-                        const partes = fechaLim.split('/');
-                        const fLimite = new Date(partes[2], partes[1] - 1, partes[0]);
-                        const hoy = new Date();
-                        hoy.setHours(0,0,0,0);
-                        const dif = Math.ceil((fLimite - hoy) / (1000 * 60 * 60 * 24));
-
-                        if (!isNaN(dif)) {
-                            if (dif <= 0) {
-                                plazoTexto = "Vencido";
-                                plazoClass = "bg-danger text-white";
-                            } else if (dif <= 3) {
-                                plazoTexto = dif + " días";
-                                plazoClass = "bg-warning text-dark";
-                            } else {
-                                plazoTexto = dif + " días";
-                                plazoClass = "bg-info text-white";
-                            }
-                        }
-                    }
-
-                    let badgeClass = "bg-secondary";
-                    if(estado.toLowerCase().includes("pendiente")) badgeClass = "badge-pendiente";
-                    else if(estado.toLowerCase().includes("proceso")) badgeClass = "badge-proceso";
-                    else if(estado.toLowerCase().includes("cumpli") || estado.toLowerCase().includes("ok")) badgeClass = "badge-cumplido";
-
-                    tabla.innerHTML += `
-                        <tr>
-                            <td class="fw-bold text-center">${item}</td>
-                            <td>${desc}</td>
-                            <td class="text-center text-danger small fw-bold">${fechaLim}</td>
-                            <td class="text-center"><span class="badge ${plazoClass}" style="font-size:0.75rem;">${plazoTexto}</span></td>
-                            <td class="text-center small">${fechaPres}</td>
-                            <td class="text-center"><span class="badge ${badgeClass}">${estado}</span></td>
-                        </tr>`;
-                });
-            } catch (e) { 
-                console.error(e); 
-                tabla.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Error al cargar datos.</td></tr>';
-            }
-        }
-
-        async function cargarLote1() {
-            const tabla = document.getElementById('tabla-lote1');
-            try {
-                const response = await fetch(URL_LOTE1);
-                const data = await response.text();
-                const filas = data.split(/\r?\n/).slice(1);
-                
-                let totalItems = 0; let totalLlegados = 0;
-                tabla.innerHTML = '';
-
-                filas.forEach(fila => {
-                    let col = parsearCSV(fila);
-                    if(col.length < 4) return;
-                    const cod = col[0].trim();
-                    const desc = col[1].trim();
-                    const tot = parseFloat(col[2]) || 0;
-                    const llego = parseFloat(col[3]) || 0;
-                    if (tot <= 0 && llego <= 0) return; 
-
-                    totalItems += tot;
-                    totalLlegados += llego;
-
-                    let falta = tot - llego;
-                    if (falta < 0) falta = 0;
-                    let estiloFalta = (falta > 0) ? "text-faltante" : "text-completo";
-                    let valFalta = (falta > 0) ? falta : "-";
-
-                    let estado = (llego >= tot) ? "✅" : (llego > 0 ? "🚚" : "🔴");
-
-                    tabla.innerHTML += `
-                        <tr>
-                            <td><small class="text-muted fw-bold">${cod}</small></td>
-                            <td>${desc}</td>
-                            <td class="text-center bg-light">${tot}</td>
-                            <td class="text-center fw-bold">${llego}</td>
-                            <td class="text-center ${estiloFalta}">${valFalta}</td>
-                            <td class="text-center h5 m-0">${estado}</td>
-                        </tr>`;
-                });
-
-                const porc = totalItems > 0 ? Math.round((totalLlegados / totalItems) * 100) : 0;
-                const barra = document.getElementById('barra-lote1');
-                barra.style.width = porc + "%";
-                barra.innerText = porc + "% RECIBIDO";
-            } catch (e) { console.error(e); }
-        }
-
-        async function cargarHerramientas() {
-            const tabla = document.getElementById('tabla-herramientas');
-            try {
-                const response = await fetch(URL_HERRAMIENTAS);
-                const data = await response.text();
-                const filas = data.split(/\r?\n/).slice(1);
-                tabla.innerHTML = '';
-                filas.forEach(fila => {
-                    let col = parsearCSV(fila);
-                    if(col.length < 4) return;
-                    const item = col[0].trim();
-                    const desc = col[1].trim();
-                    const tot = parseFloat(col[2]) || 0;
-                    const verif = parseFloat(col[3]) || 0;
-                    if(tot <= 0) return;
-                    let falta = tot - verif;
-                    if (falta < 0) falta = 0;
-                    tabla.innerHTML += `
-                        <tr>
-                            <td class="text-center"><small>${item}</small></td>
-                            <td>${desc}</td>
-                            <td class="text-center bg-light">${tot}</td>
-                            <td class="text-center fw-bold">${verif}</td>
-                            <td class="text-center ${falta > 0 ? 'text-danger fw-bold' : 'text-muted'}">${falta > 0 ? falta : "-"}</td>
-                        </tr>`;
-                });
-            } catch (e) { console.error(e); }
-        }
-
-        // --- FUNCIONES DE EXPORTACIÓN ---
-
-        function exportarPDF(tablaId, titulo) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text(titulo, 14, 15);
-            doc.autoTable({ 
-                html: '#' + tablaId,
-                startY: 20,
-                theme: 'striped',
-                headStyles: { fillColor: [0, 67, 168] }
-            });
-            doc.save(`${titulo}.pdf`);
-        }
-
-        function enviarWhatsApp(nombreReporte, tablaId) {
-            let mensaje = `*REPORTE: ${nombreReporte}*\n\n`;
-            const filas = document.getElementById(tablaId).getElementsByTagName('tr');
-            let hayFaltantes = false;
-
-            for (let i = 0; i < filas.length; i++) {
-                const c = filas[i].getElementsByTagName('td');
-                if (c.length > 4) {
-                    let falta = c[4].innerText;
-                    if (falta !== "-" && falta !== "0") {
-                        mensaje += `• ${c[1].innerText}: *Faltan ${falta}*\n`;
-                        hayFaltantes = true;
-                    }
-                }
-            }
-            if(!hayFaltantes) mensaje += "✅ ¡Todo completo!";
-            window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
-        }
-
-        function enviarWhatsAppObligaciones() {
-            let mensaje = `*📅 REPORTE DE OBLIGACIONES - dw*\n\n`;
-            const filas = document.getElementById('tabla-obligaciones').getElementsByTagName('tr');
-            for (let i = 0; i < filas.length; i++) {
-                const c = filas[i].getElementsByTagName('td');
-                if (c.length > 4) {
-                    let estado = c[5].innerText;
-                    if(!estado.includes("Cumplido") && !estado.includes("OK")) {
-                        mensaje += `⚠️ *${c[1].innerText}*\nVence: ${c[2].innerText} (${c[3].innerText})\n\n`;
-                    }
-                }
-            }
-            window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
-        }
-
-        function exportarExcel(tablaId, nombreArchivo) {
+        async function cargarDatos(gid, tablaId, tipo, barraId = null) {
             const tabla = document.getElementById(tablaId);
-            const wb = XLSX.utils.table_to_book(tabla);
-            XLSX.writeFile(wb, `${nombreArchivo}.xlsx`);
-        }
+            try {
+                const resp = await fetch(`${base_url}&gid=${gid}`);
+                const csv = await resp.text();
+                const filas = csv.split(/\r?\n/).slice(1);
+                tabla.innerHTML = '';
+                
+                let t_sol = 0, t_lle = 0;
 
-        function imprimirTabla(divId) {
-            const contenido = document.getElementById(divId).innerHTML;
-            const ventana = window.open('', '', 'height=600,width=800');
-            ventana.document.write('<html><head><title>Imprimir dw</title>');
-            ventana.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">');
-            ventana.document.write('</head><body class="p-4">');
-            ventana.document.write(contenido);
-            ventana.document.write('</body></html>');
-            ventana.document.close();
-            setTimeout(() => { ventana.print(); }, 800);
-        }
+                filas.forEach(f => {
+                    const c = f.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if(c.length < 3) return;
 
-        function filtrarTabla() {
-            let input = document.getElementById("buscadorInput").value.toUpperCase();
-            let tr = document.getElementById("tabla-lote1").getElementsByTagName("tr");
-            for (let i = 0; i < tr.length; i++) {
-                let td = tr[i].getElementsByTagName("td")[1];
-                if (td) {
-                    tr[i].style.display = td.innerText.toUpperCase().indexOf(input) > -1 ? "" : "none";
+                    let html = '';
+                    if(tipo === 'lote') {
+                        const sol = parseFloat(c[2]) || 0;
+                        const lle = parseFloat(c[3]) || 0;
+                        const fal = sol - lle;
+                        t_sol += sol; t_lle += lle;
+                        html = `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${sol}</td><td>${lle}</td><td class="${fal>0?'text-danger fw-bold':''}">${fal<=0?'-':fal}</td><td>${lle>=sol?'✅':'🔴'}</td></tr>`;
+                    } else if(tipo === 'herra') {
+                        const sol = parseFloat(c[2]) || 0;
+                        const lle = parseFloat(c[3]) || 0;
+                        html = `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${sol}</td><td>${lle}</td><td class="text-danger">${sol-lle}</td></tr>`;
+                    } else if(tipo === 'oblig') {
+                        html = `<tr><td>${c[0]}</td><td>${c[1]}</td><td class="text-center">${c[2]}</td><td class="text-center">${c[3]}</td><td class="text-center">${c[4]}</td></tr>`;
+                    }
+                    tabla.innerHTML += html;
+                });
+
+                if(barraId && t_sol > 0) {
+                    const p = Math.round((t_lle/t_sol)*100);
+                    document.getElementById(barraId).style.width = p+'%';
+                    document.getElementById(barraId).innerText = p+'%';
                 }
-            }
+            } catch(e) { console.log("Error en "+tablaId); }
         }
 
-        function toggleHerramientas() {
-            const x = document.getElementById("lista-herramientas");
-            x.style.display = x.style.display === "none" ? "block" : "none";
-        }
+        // Ejecución inicial
+        cargarDatos(GIDS.OBLIG, 'tabla-obligaciones', 'oblig');
+        cargarDatos(GIDS.LOTE1, 'tabla-lote1', 'lote', 'barra-lote1');
+        cargarDatos(GIDS.LOTE2, 'tabla-lote2', 'lote', 'barra-lote2');
+        cargarDatos(GIDS.LOTE3, 'tabla-lote3', 'lote', 'barra-lote3');
+        cargarDatos(GIDS.ADIC, 'tabla-adicional', 'oblig');
+        cargarDatos(GIDS.HERRA, 'tabla-herramientas', 'herra');
 
-        // Inicio de carga
-        cargarObligaciones();
-        cargarLote1();
-        cargarHerramientas();
+        function exportarExcel(id, nombre) {
+            const wb = XLSX.utils.table_to_book(document.getElementById(id));
+            XLSX.writeFile(wb, `${nombre}_dw.xlsx`);
+        }
     </script>
 </body>
 </html>
