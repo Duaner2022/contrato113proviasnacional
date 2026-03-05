@@ -129,8 +129,6 @@
 </div>
 
 <div class="container">
-    <div id="error-display"></div>
-
     <div class="summary-box">
         <h4 class="summary-title">📊 RESUMEN GENERAL DE OBLIGACIONES - DIA 1 (16 DE DICIEMBRE 2025)</h4>
         <div class="table-container">
@@ -194,16 +192,16 @@
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td class="txt-left">5. Entrega Doc. Técnica Prestacion Adicional N°01:: dos (02) originales de cada uno</td>
+                        <td class="txt-left">5. Entrega Doc. Técnica Adicional N°01</td>
                         <td>90 dc</td>
                         <td class="txt-red">28-Mar-2026</td>
                         <td class="txt-bold">27-Abr-2026</td>
                     </tr>
                     <tr>
                         <td>2</td>
-                        <td class="txt-left">Prestacion Adicional N°01 (Unica Entrega)</td>
+                        <td class="txt-left">Prestación Adicional N°01 (Única Entrega)</td>
                         <td>240 dc</td>
-                        <td class="txt-red">25-Ago-2026</td>
+                        <td class="txt-red">25-Ago-2026</td> 
                         <td class="txt-bold">24-Set-2026</td>
                     </tr>
                 </tbody>
@@ -245,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function() {
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- DATOS TARJETAS ---
+        // --- DATOS TARJETAS (Meses en JS: 0=Ene, 1=Feb, 2=Mar, 7=Ago, 8=Set) ---
         const data = [
             {
                 t: "1. Documentación Técnica: dos (02) originales de cada uno",
@@ -276,96 +274,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 h: "<li class='check'>04 puentes de 27m doble vía</li><li class='check'>04 puentes de 39m doble vía</li><li class='check'>04 puentes de 60m doble vía</li><li>Narices doble vía</li><li>Dossier de calidad</li><li>Capacitación técnica (Grupo 2)</li>"
             },
             {
-                t: "5. Entrega Doc. Técnica Prestacion Adicional N°01:: dos (02) originales de cada uno",
+                t: "5. Entrega Doc. Técnica Prestación Adicional N°01",
                 plazo: "90 Días Calendario (Adicional)",
-                p: [2026, 2, 28], // 28 Marzo
-                l: [2026, 3, 27], // 27 Abril
+                p: [2026, 2, 28], 
+                l: [2026, 3, 27], 
                 h: "<li>Documentación técnica específica para el Adicional N°01.</li><li>Planos y Memorias de cálculo actualizadas.</li><li>Cronograma de ejecución del adicional.</li>"
             },
             {
-                t: "6. Prestacion Adicional N°01 (Unica Entrega)",
+                t: "6. Prestación Adicional N°01 (Única Entrega)",
                 plazo: "240 Días Calendario (Adicional)",
-                p: [2026, 7, 26], 
+                p: [2026, 7, 25], // ACTUALIZADO A 25 DE AGOSTO (Mes 7 en JS)
                 l: [2026, 8, 24], 
                 h: "<li>Suministro total de componentes correspondientes al Adicional N°01.</li><li>Dossier de calidad del adicional.</li><li>Pruebas de materiales específicas.</li>"
             }
         ];
 
         const cont = document.getElementById('app-container');
-        const today = new Date(); today.setHours(0,0,0,0);
-        const ds = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-        const ms = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-
-        let html = "";
-        data.forEach((item, i) => {
-            const dP = new Date(item.p[0], item.p[1], item.p[2]);
-            const dL = new Date(item.l[0], item.l[1], item.l[2]);
-            const difP = Math.ceil((dP - today) / 86400000);
-            const difL = Math.ceil((dL - today) / 86400000);
-            let cP = 's-ok'; if(difP <= 0) cP = 's-warn';
-            let cL = 's-ok'; if(difL <= 30) cL = 's-warn'; if(difL <= 7) cL = 's-dang';
-            const fDate = d => `${ds[d.getDay()]} ${d.getDate()} ${ms[d.getMonth()]} ${d.getFullYear()}`;
-            const iso = dL.toISOString().slice(0,10).replace(/-/g,"");
-            const cal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(item.t)}&dates=${iso}/${iso}&details=${encodeURIComponent("Plazo Contractual: " + item.plazo)}`;
-
-            html += `
-            <div class="card" id="c${i}">
-                <div class="card-head" onclick="toggle(${i})">
-                    <div class="card-title">${item.t}</div>
-                    <div class="plazo-badge">🎯 Plazo Presentación: ${item.plazo}</div>
-                    <div class="toggle-icon">▼</div>
-                    <div class="stats">
-                        <div class="stat-box ${cP}">
-                            <span class="stat-lbl">🔔 ALERTA PLANEAMIENTO<br>(30 DÍAS ANTES)</span>
-                            <span class="stat-val">${difP < 0 ? '--' : difP}</span>
-                            <span class="stat-desc">Días Cal. Restantes</span>
-                            <span class="stat-date">${fDate(dP)}</span>
-                        </div>
-                        <div class="stat-box ${cL}">
-                            <span class="stat-lbl">🚩 FECHA LÍMITE DE ENTREGA</span>
-                            <span class="stat-val">${difL}</span>
-                            <span class="stat-desc">Días Cal. Restantes</span>
-                            <span class="stat-date">${fDate(dL)}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <ul>${item.h}</ul>
-                    <div style="text-align:center; margin-top:20px;">
-                        <a href="${cal}" target="_blank" style="color:#003366; font-weight:bold; text-decoration:none;">📅 Agendar en Google Calendar</a>
-                    </div>
-                </div>
-            </div>`;
-        });
-        if(cont) cont.innerHTML = html;
-    } catch (e) {
-        console.error(e);
-    }
-});
-
-function toggle(id) {
-    const el = document.getElementById('c'+id);
-    if(el) el.classList.toggle('open');
-}
-
-function shareWS() {
-    let msg = "*REPORTE EJECUTIVO CONSORCIO HARZONE- KAYSUN - CONTRATO 113*\n\n";
-    const today = new Date(); today.setHours(0,0,0,0);
-    const items = [
-        {n:"Doc. Técnica", d:new Date(2026,2,15), p:"90 Días"},
-        {n:"1ra Entrega", d:new Date(2026,4,14), p:"150 Días"},
-        {n:"2da Entrega", d:new Date(2026,6,3), p:"200 Días"},
-        {n:"3ra Entrega", d:new Date(2026,7,12), p:"240 Días"},
-        {n:"Doc. Técnica Adic. 01", d:new Date(2026,3,27), p:"90 Días"},
-        {n:"Adic. 01 (Unica)", d:new Date(2026,8,24), p:"240 Días"}
-    ];
-    items.forEach(i => {
-        const r = Math.ceil((i.d - today)/86400000);
-        const icon = r < 30 ? "⚠️" : "✅";
-        msg += `${icon} *${i.n}*\n🗓️ Vence: ${i.d.getDate()}/${i.d.getMonth()+1}/${i.d.getFullYear()}\n⏳ Restan: ${r} Días\n\n`;
-    });
-    window.open("https://wa.me/?text=" + encodeURIComponent(msg));
-}
-</script>
-</body>
-</html>
