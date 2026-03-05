@@ -13,7 +13,6 @@
         .badge-restante { background-color: #0dcaf0; color: white; border-radius: 12px; padding: 4px 10px; font-weight: bold; font-size: 0.85rem; }
         .text-limite { color: #dc3545; font-weight: bold; }
         .text-falta { color: #dc3545; font-weight: bold; }
-        .btn-wa { background-color: #25D366; color: white; border: none; font-size: 0.8rem; padding: 5px 15px; }
     </style>
 </head>
 <body>
@@ -26,14 +25,11 @@
 <div class="container-fluid px-4">
     
     <div class="card-custom">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="m-0 text-dark"><i class="fas fa-calendar-check text-warning"></i> Control de Obligaciones</h5>
-            <button class="btn btn-wa rounded-pill"><i class="fab fa-whatsapp"></i> Enviar Reporte</button>
-        </div>
+        <h5><i class="fas fa-calendar-check text-warning"></i> Control de Obligaciones</h5>
         <div class="table-responsive">
             <table class="table table-hover align-middle" style="font-size: 0.85rem;">
                 <thead class="table-light">
-                    <tr><th>Item</th><th>Obligación</th><th>Límite</th><th>Fecha Presentación</th><th class="text-center">Días Restantes</th><th>Estado</th></tr>
+                    <tr><th>Item</th><th>Obligación</th><th>Límite</th><th>Presentación</th><th>Días</th><th>Estado</th></tr>
                 </thead>
                 <tbody id="tabla-obligaciones"></tbody>
             </table>
@@ -43,51 +39,41 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #0d6efd;">
-                <h6 class="text-primary fw-bold"><i class="fas fa-box"></i> Lote 1: Estructuras</h6>
+                <h6 class="text-primary fw-bold">Lote 1: Estructuras</h6>
                 <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-lote1"></tbody></table></div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #6610f2;">
-                <h6 style="color: #6610f2;" class="fw-bold"><i class="fas fa-cubes"></i> Lote 2: Componentes</h6>
+                <h6 style="color: #6610f2;" class="fw-bold">Lote 2: Componentes</h6>
                 <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-lote2"></tbody></table></div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #0dcaf0;">
-                <h6 class="text-info fw-bold"><i class="fas fa-paint-roller"></i> Lote 3: Acabados</h6>
+                <h6 class="text-info fw-bold">Lote 3: Acabados</h6>
                 <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-lote3"></tbody></table></div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #dc3545;">
-                <h6 class="text-danger fw-bold"><i class="fas fa-plus-circle"></i> Adicional y Repuestos</h6>
+                <h6 class="text-danger fw-bold">Adicional y Repuestos</h6>
                 <div class="table-scroll"><table class="table table-sm table-striped"><tbody id="data-adicional"></tbody></table></div>
             </div>
         </div>
     </div>
 
-    <div class="row mt-2">
+    <div class="row mt-3">
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #198754;">
-                <h6 class="text-success fw-bold"><i class="fas fa-tools"></i> Herramientas LOTE 1</h6>
-                <div class="table-scroll">
-                    <table class="table table-sm table-hover">
-                        <thead class="table-dark"><tr><th>Item</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th></tr></thead>
-                        <tbody id="herra-l1"></tbody>
-                    </table>
-                </div>
+                <h6 class="text-success fw-bold">Herramientas LOTE 1</h6>
+                <div class="table-scroll"><table class="table table-sm"><tbody id="herra-l1"></tbody></table></div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card-custom" style="border-left-color: #198754;">
-                <h6 class="text-success fw-bold"><i class="fas fa-wrench"></i> Herramientas LOTE 3</h6>
-                <div class="table-scroll">
-                    <table class="table table-sm table-hover">
-                        <thead class="table-dark"><tr><th>Item</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th></tr></thead>
-                        <tbody id="herra-l3"></tbody>
-                    </table>
-                </div>
+                <h6 class="text-success fw-bold">Herramientas LOTE 3</h6>
+                <div class="table-scroll"><table class="table table-sm"><tbody id="herra-l3"></tbody></table></div>
             </div>
         </div>
     </div>
@@ -96,64 +82,50 @@
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv';
     
-    // GIDs VERIFICADOS
+    // GIDs EXTRAÍDOS DE TUS IMÁGENES
     const GIDS = {
-        OBLIG: '0',
-        L1: '1555920355',
-        L2: '1410118559', 
+        OBLIG: '0', 
+        L1: '1555920355', 
+        L2: '533666501', // Corregido según imagen_167bff
         L3: '1410118559', 
-        ADIC: '123456789', // Cambiar por el GID real si no carga
+        ADIC: '1540865888', // GID estimado para Adicional
         H1: '438228635',
-        H3: '533666501'
+        H3: '533666501'  // Corregido según imagen_14b20a
     };
 
-    // FUNCIÓN MAESTRA DE CARGA
     async function cargar(gid, elementId, modo) {
         try {
             const resp = await fetch(`${SHEET_URL}&gid=${gid}&t=${Date.now()}`);
             const data = await resp.text();
-            const filas = data.split(/\r?\n/).slice(1);
+            const filas = data.split(/\r?\n/).filter(f => f.trim() !== "");
             let html = '';
 
-            filas.forEach(linea => {
-                // EXPRESIÓN REGULAR PARA MANEJAR COMAS DENTRO DE COMILLAS
-                const c = linea.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || linea.split(',');
+            filas.slice(1).forEach(linea => {
+                const c = linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(i => i.replace(/"/g, '').trim());
                 if (c.length < 3) return;
 
-                const limpiar = (txt) => txt ? txt.replace(/"/g, '').trim() : '';
-
                 if (modo === 'oblig') {
-                    const estClass = limpiar(c[4]) === 'Cumplido' ? 'bg-success' : 'bg-danger';
-                    html += `<tr>
-                        <td>${limpiar(c[0])}</td>
-                        <td>${limpiar(c[1])}</td>
-                        <td class="text-limite">${limpiar(c[2])}</td>
-                        <td>${limpiar(c[3])||'-'}</td>
-                        <td class="text-center">${c[5]?`<span class="badge-restante">${limpiar(c[5])}</span>`:'-'}</td>
-                        <td><span class="badge ${estClass}">${limpiar(c[4])}</span></td>
-                    </tr>`;
-                } else if (modo === 'herra') {
-                    const t = parseInt(c[2]) || 0;
-                    const l = parseInt(c[3]) || 0;
-                    html += `<tr><td>${limpiar(c[0])}</td><td>${limpiar(c[1])}</td><td>${t}</td><td>${l}</td><td class="text-falta">${t-l}</td></tr>`;
+                    const estClass = c[4] === 'Cumplido' ? 'bg-success' : 'bg-danger';
+                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td class="text-limite">${c[2]}</td><td>${c[3]||'-'}</td><td><span class="badge-restante">${c[5]||'-'}</span></td><td><span class="badge ${estClass}">${c[4]}</span></td></tr>`;
                 } else {
-                    const f = (parseInt(c[2]) || 0) - (parseInt(c[3]) || 0);
-                    html += `<tr><td><strong>${limpiar(c[0])}</strong></td><td>${limpiar(c[1])}</td><td>${c[2]||0}</td><td>${c[3]||0}</td><td class="text-danger">${f}</td><td>${f===0?'🟢':'🔴'}</td></tr>`;
+                    const total = parseInt(c[2]) || 0;
+                    const llego = parseInt(c[3]) || 0;
+                    const falta = total - llego;
+                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${total}</td><td>${llego}</td><td class="text-danger fw-bold">${falta}</td><td>${falta===0?'🟢':'🔴'}</td></tr>`;
                 }
             });
-            document.getElementById(elementId).innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">Sin datos</td></tr>';
+            document.getElementById(elementId).innerHTML = html || '<tr><td colspan="5">No hay datos</td></tr>';
         } catch (e) { console.error("Error en " + elementId); }
     }
 
-    // DISPARADOR INICIAL
     window.onload = () => {
         cargar(GIDS.OBLIG, 'tabla-obligaciones', 'oblig');
         cargar(GIDS.L1, 'data-lote1', 'lote');
         cargar(GIDS.L2, 'data-lote2', 'lote');
         cargar(GIDS.L3, 'data-lote3', 'lote');
         cargar(GIDS.ADIC, 'data-adicional', 'lote');
-        cargar(GIDS.H1, 'herra-l1', 'herra');
-        cargar(GIDS.H3, 'herra-l3', 'herra');
+        cargar(GIDS.H1, 'herra-l1', 'lote');
+        cargar(GIDS.H3, 'herra-l3', 'lote');
     };
 </script>
 </body>
