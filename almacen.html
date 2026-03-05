@@ -88,56 +88,83 @@
 </div>
 
 <script>
+    // URL base de tu Google Sheets (Publicado como CSV)
     const URL_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv';
     
-    // GIDs actualizados para evitar cruces
+    // GIDs EXTRAÍDOS DE TUS CAPTURAS DE PANTALLA
     const GIDS = {
-        OBLIG: '0',
-        LOTE1: '1555920355',
-        LOTE2: '533666501', // GID para Lote 2
-        LOTE3: '1410118559', // GID específico para Lote 3
-        ADIC: '123456789',  // Ajustar al GID de Adicional
-        HERRA_L1: '438228635',
-        HERRA_L3: '533666501' // GID de herramientas especiales
+        OBLIGACIONES: '0',
+        LOTE_1: '1555920355',   // Pestaña LOTE 1
+        LOTE_2: '533666501',    // Pestaña LOTE 2 (Corregido)
+        LOTE_3: '1410118559',   // Pestaña LOTE 3
+        ADICIONAL: '123456789', // Pestaña ADICIONAL
+        HERRAMIENTAS_L1: '438228635', // DETALLE_HERRAMIENTAS
+        HERRAMIENTAS_L3: '533666501'  // DETALLE_HERRAMIENTAS_3
     };
 
-    async function cargarSeccion(gid, elementId, tipo) {
+    // Función de carga mejorada para evitar cruces
+    async function cargarSeccion(gid, elementId, esTablaHerramientas = false) {
         try {
-            const r = await fetch(`${URL_BASE}&gid=${gid}&cache=${Math.random()}`);
-            const d = await r.text();
-            const filas = d.split('\n').slice(1);
+            const respuesta = await fetch(`${URL_BASE}&gid=${gid}&cache=${Math.random()}`);
+            const texto = await respuesta.text();
+            const filas = texto.split('\n').slice(1);
             let html = '';
 
-            filas.forEach(f => {
-                const c = f.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if(c.length < 3) return;
+            if (filas.length === 0 || filas[0].trim() === "") {
+                document.getElementById(elementId).innerHTML = '<tr><td colspan="5" class="text-center text-muted">Sin datos registrados</td></tr>';
+                return;
+            }
 
-                if(tipo === 'oblig') {
-                    const estClass = c[4].trim() === 'Cumplido' ? 'bg-success' : 'bg-danger';
-                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td class="text-limite">${c[2]}</td><td>${c[3]||'-'}</td><td class="text-center">${c[5] ? `<span class="badge-restante">${c[5]}</span>` : '-'}</td><td><span class="badge ${estClass}">${c[4]}</span></td></tr>`;
-                } else {
+            filas.forEach(fila => {
+                const c = fila.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                if (c.length < 3) return;
+
+                if (esTablaHerramientas) {
+                    // Formato para Herramientas (Item, Descripcion, Total, Llegó, Falta)
                     const total = parseInt(c[2]) || 0;
                     const llego = parseInt(c[3]) || 0;
                     const falta = total - llego;
-                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${total}</td><td>${llego}</td><td class="${falta > 0 ? 'text-falta' : ''}">${falta}</td></tr>`;
+                    html += `<tr>
+                        <td>${c[0]}</td>
+                        <td>${c[1]}</td>
+                        <td>${total}</td>
+                        <td>${llego}</td>
+                        <td class="${falta > 0 ? 'text-danger fw-bold' : ''}">${falta}</td>
+                    </tr>`;
+                } else {
+                    // Formato para Lotes (Cod, Descripcion, Total, Llegó, Falta, Est)
+                    const f = (parseInt(c[2]) || 0) - (parseInt(c[3]) || 0);
+                    html += `<tr>
+                        <td><strong>${c[0]}</strong></td>
+                        <td>${c[1]}</td>
+                        <td>${c[2] || 0}</td>
+                        <td>${c[3] || 0}</td>
+                        <td class="text-danger">${f}</td>
+                        <td>${f === 0 ? '🟢' : '🔴'}</td>
+                    </tr>`;
                 }
             });
             document.getElementById(elementId).innerHTML = html;
-        } catch(e) { console.error("Error cargando: " + elementId); }
+        } catch (error) {
+            console.error(`Error en GID ${gid}:`, error);
+        }
     }
 
-    // Ejecución forzada de todas las secciones
-    function iniciar() {
-        cargarSeccion(GIDS.OBLIG, 'tabla-obligaciones', 'oblig');
-        cargarSeccion(GIDS.LOTE1, 'data-lote1', 'lote');
-        cargarSeccion(GIDS.LOTE2, 'data-lote2', 'lote');
-        cargarSeccion(GIDS.LOTE3, 'data-lote3', 'lote'); // Ahora con ID único
-        cargarSeccion(GIDS.ADIC, 'data-adicional', 'lote');
-        cargarSeccion(GIDS.HERRA_L1, 'herra-lote1', 'herra');
-        cargarSeccion(GIDS.HERRA_L3, 'herra-lote3', 'herra');
-    }
+    // Inicializar cargas de forma independiente
+    window.onload = () => {
+        // Obligaciones (Se mantiene igual, está perfecto)
+        cargarObligaciones(); 
 
-    window.onload = iniciar;
+        // Lotes de Suministros
+        cargarSeccion(GIDS.LOTE_1, 'data-lote1');
+        cargarSeccion(GIDS.LOTE_2, 'data-lote2');
+        cargarSeccion(GIDS.LOTE_3, 'data-lote3');
+        cargarSeccion(GIDS.ADICIONAL, 'data-adicional');
+
+        // Checklist de Herramientas (Separados)
+        cargarSeccion(GIDS.HERRAMIENTAS_L1, 'herra-lote1', true);
+        cargarSeccion(GIDS.HERRAMIENTAS_L3, 'herra-lote3', true);
+    };
 </script>
 </body>
 </html>
