@@ -1,4 +1,4 @@
-      <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -18,15 +18,13 @@
         .badge-proceso { background-color: #ffc107; color: black; }
         .badge-cumplido { background-color: #28a745; color: white; }
         .navbar-custom { background-color: #343a40; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; }
-        .btn-accion { margin-right: 5px; margin-bottom: 5px; }
         .table-responsive { overflow-x: auto; }
-        @media (max-width: 768px) { .navbar-custom { font-size: 1rem; } }
     </style>
 </head>
 <body>
 
     <div class="navbar-custom">
-        <i class="fas fa-warehouse"></i> CONTROL DE ALMACÉN Y OBLIGACIONES - CONTRATO 113
+        <i class="fas fa-warehouse"></i> CONTROL DE ALMACÉN Y OBLIGACIONES - dw
     </div>
 
     <div class="container mt-4">
@@ -75,17 +73,11 @@
                         </tbody>
                 </table>
             </div>
-            <div class="mt-3">
-                <button onclick="exportarExcel()" class="btn btn-outline-success btn-accion"><i class="fas fa-file-excel"></i> Excel</button>
-                <button onclick="exportarPDF()" class="btn btn-outline-danger btn-accion"><i class="fas fa-file-pdf"></i> PDF</button>
-                <button onclick="imprimirTabla()" class="btn btn-outline-dark btn-accion"><i class="fas fa-print"></i> Imprimir</button>
-            </div>
         </div>
 
     </div>
 
     <script>
-        // --- FUNCIÓN OBLIGACIONES (ACTUALIZADA POR DW) ---
         async function cargarObligaciones() {
             const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1p2M3Y-Yj6C0T5-lM9mKq1f8uR0iK-lXp-vG7_V0qN5R-u-yX7YvK-q-L8N-yX_X_R-vG7_V0qN5R/pub?gid=0&output=csv&cache=" + new Date().getTime();
             
@@ -107,7 +99,7 @@
                         let diasTexto = "-";
                         let diasBadgeClass = "bg-light text-dark";
 
-                        // Lógica de cálculo de días restantes
+                        // Lógica de Plazo (Color Naranja si < 3 días)
                         if (estado.toLowerCase() !== "cumplido" && fechaVenc && fechaVenc.includes("/")) {
                             const partes = fechaVenc.split('/');
                             const fechaObjeto = new Date(partes[2], partes[1] - 1, partes[0]);
@@ -123,7 +115,7 @@
                                     diasBadgeClass = "bg-danger text-white";
                                 } else if (dias <= 3) {
                                     diasTexto = dias + " días";
-                                    diasBadgeClass = "bg-warning text-dark"; // NARANJA ALERTA
+                                    diasBadgeClass = "bg-warning text-dark"; // NARANJA
                                 } else {
                                     diasTexto = dias + " días";
                                     diasBadgeClass = "bg-info text-white";
@@ -147,10 +139,9 @@
                             </tr>`;
                     }
                 });
-            } catch (error) { console.error("Error:", error); }
+            } catch (error) { console.error("Error Obligaciones:", error); }
         }
 
-        // --- FUNCIÓN LOTE 1 ---
         async function cargarLote1() {
             const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1p2M3Y-Yj6C0T5-lM9mKq1f8uR0iK-lXp-vG7_V0qN5R-u-yX7YvK-q-L8N-yX_X_R-vG7_V0qN5R/pub?gid=1510344498&output=csv";
             try {
@@ -178,7 +169,6 @@
             } catch (error) { console.error("Error Lote 1:", error); }
         }
 
-        // --- UTILIDADES ---
         function filtrarTabla() {
             let input = document.getElementById("buscadorInput").value.toUpperCase();
             let rows = document.getElementById("cuerpo-lote1").getElementsByTagName("tr");
@@ -188,36 +178,18 @@
             }
         }
 
-        function exportarExcel() {
-            const wb = XLSX.utils.table_to_book(document.getElementById('tabla-lote1'));
-            XLSX.writeFile(wb, 'Inventario_Lote1_Contrato113.xlsx');
-        }
-
-        function exportarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = jsPDF();
-            doc.text("Inventario Lote 1 - Contrato 113", 14, 15);
-            doc.autoTable({ html: '#tabla-lote1', startY: 20 });
-            doc.save('Inventario_Lote1.pdf');
-        }
-
-        function imprimirTabla() {
-            window.print();
-        }
-
         function enviarWhatsAppObligaciones() {
-            let mensaje = "*ALERTA DE OBLIGACIONES - CONTRATO 113*%0A%0A";
+            let mensaje = "*CONTROL DE OBLIGACIONES - dw*%0A%0A";
             const filas = document.getElementById("cuerpo-obligaciones").getElementsByTagName("tr");
             for (let row of filas) {
                 const c = row.getElementsByTagName("td");
                 if (!c[4].innerText.toLowerCase().includes("cumplido")) {
-                    mensaje += `⚠️ *${c[1].innerText}*%0AVence: ${c[2].innerText} (${c[3].innerText})%0A%0A`;
+                    mensaje += `⚠️ *${c[1].innerText}*%0AVence: ${c[2].innerText} (Quedan: ${c[3].innerText})%0A%0A`;
                 }
             }
             window.open(`https://wa.me/?text=${mensaje}`, '_blank');
         }
 
-        // Carga Inicial
         cargarObligaciones();
         cargarLote1();
     </script>
