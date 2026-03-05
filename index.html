@@ -194,7 +194,7 @@
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td class="txt-left">Entrega Doc. Técnica Prestacion Adicional N°01</td>
+                        <td class="txt-left">5. Entrega Doc. Técnica Prestacion Adicional N°01:: dos (02) originales de cada uno</td>
                         <td>90 dc</td>
                         <td class="txt-red">29-Mar-2026</td>
                         <td class="txt-bold">27-Abr-2026</td>
@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function() {
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- DATOS TARJETAS (INCLUYENDO ADICIONAL N°01) ---
+        // --- DATOS TARJETAS ---
         const data = [
             {
                 t: "1. Documentación Técnica: dos (02) originales de cada uno",
@@ -276,17 +276,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 h: "<li class='check'>04 puentes de 27m doble vía</li><li class='check'>04 puentes de 39m doble vía</li><li class='check'>04 puentes de 60m doble vía</li><li>Narices doble vía</li><li>Dossier de calidad</li><li>Capacitación técnica (Grupo 2)</li>"
             },
             {
-                t: "5. Entrega Doc. Técnica Prestacion Adicional N°01",
+                t: "5. Entrega Doc. Técnica Prestacion Adicional N°01:: dos (02) originales de cada uno",
                 plazo: "90 Días Calendario (Adicional)",
-                p: [2026, 2, 28], // 28 Marzo (30 días antes de 27 Abr)
+                p: [2026, 2, 29], // Sáb 29 Mar 2026 (JavaScript meses 0-11, 2 = Marzo)
                 l: [2026, 3, 27], // 27 Abril
                 h: "<li>Documentación técnica específica para el Adicional N°01.</li><li>Planos y Memorias de cálculo actualizadas.</li><li>Cronograma de ejecución del adicional.</li>"
             },
             {
                 t: "6. Prestacion Adicional N°01 (Unica Entrega)",
                 plazo: "240 Días Calendario (Adicional)",
-                p: [2026, 7, 26], // 26 Agosto (30 días antes de 24 Set)
-                l: [2026, 8, 24], // 24 Setiembre
+                p: [2026, 7, 26], 
+                l: [2026, 8, 24], 
                 h: "<li>Suministro total de componentes correspondientes al Adicional N°01.</li><li>Dossier de calidad del adicional.</li><li>Pruebas de materiales específicas.</li>"
             }
         ];
@@ -369,4 +369,3 @@ function shareWS() {
 </script>
 </body>
 </html>
-
