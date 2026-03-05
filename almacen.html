@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -18,8 +18,8 @@
         .badge-proceso { background-color: #ffc107; color: black; }
         .badge-cumplido { background-color: #28a745; color: white; }
         .navbar-custom { background-color: #343a40; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; }
-        .btn-accion { margin-right: 5px; margin-bottom: 5px; }
         .table-responsive { overflow-x: auto; }
+        .btn-accion { margin-right: 5px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -39,8 +39,7 @@
                             <th>Item</th>
                             <th>Obligación</th>
                             <th>Vencimiento</th>
-                            <th>Plazo</th>
-                            <th>Estado</th>
+                            <th>Plazo</th> <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody id="cuerpo-obligaciones">
@@ -48,7 +47,7 @@
                 </table>
             </div>
             <button onclick="enviarWhatsAppObligaciones()" class="btn btn-success mt-2">
-                <i class="fab fa-whatsapp"></i> Reportar Alertas de Plazos
+                <i class="fab fa-whatsapp"></i> Reportar Alertas
             </button>
         </div>
 
@@ -57,7 +56,7 @@
         <div class="card-box">
             <h4 class="mb-3 text-success"><i class="fas fa-box"></i> Inventario Lote 1</h4>
             <div class="mb-3">
-                <input type="text" id="buscadorInput" onkeyup="filtrarTabla()" class="form-control" placeholder="🔍 Buscar por nombre de componente...">
+                <input type="text" id="buscadorInput" onkeyup="filtrarTabla()" class="form-control" placeholder="🔍 Buscar componente...">
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered" id="tabla-lote1">
@@ -78,93 +77,125 @@
                 <button onclick="exportarExcel()" class="btn btn-outline-success btn-accion"><i class="fas fa-file-excel"></i> Excel</button>
                 <button onclick="exportarPDF()" class="btn btn-outline-danger btn-accion"><i class="fas fa-file-pdf"></i> PDF</button>
                 <button onclick="imprimirTabla()" class="btn btn-outline-dark btn-accion"><i class="fas fa-print"></i> Imprimir</button>
+                <button onclick="toggleHerramientas()" class="btn btn-outline-primary btn-accion"><i class="fas fa-tools"></i> Herramientas</button>
             </div>
         </div>
+
+        <div id="lista-herramientas" class="card-box" style="display: none;">
+            <h4 class="mb-3 text-warning"><i class="fas fa-wrench"></i> Kit de Herramientas</h4>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-herramientas"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script>
+        // CARGAR OBLIGACIONES CON PLAZO
         async function cargarObligaciones() {
             const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1p2M3Y-Yj6C0T5-lM9mKq1f8uR0iK-lXp-vG7_V0qN5R-u-yX7YvK-q-L8N-yX_X_R-vG7_V0qN5R/pub?gid=0&output=csv&cache=" + new Date().getTime();
-            
             try {
-                const respuesta = await fetch(url);
-                const datos = await respuesta.text();
-                const filas = datos.split("\n").slice(1);
-                const cuerpoTabla = document.getElementById("cuerpo-obligaciones");
-                cuerpoTabla.innerHTML = "";
+                const r = await fetch(url);
+                const d = await r.text();
+                const filas = d.split("\n").slice(1);
+                const cuerpo = document.getElementById("cuerpo-obligaciones");
+                cuerpo.innerHTML = "";
 
-                filas.forEach(linea => {
-                    const fila = linea.split(",");
-                    if (fila.length >= 5) {
-                        const item = fila[0];
-                        const obligacion = fila[1];
-                        const fechaVenc = fila[2];
-                        const estado = fila[4] ? fila[4].trim() : "";
+                filas.forEach(l => {
+                    const f = l.split(",");
+                    if (f.length >= 5) {
+                        const venc = f[2];
+                        const est = f[4].trim();
                         
-                        let diasTexto = "-";
-                        let diasBadgeClass = "bg-light text-dark";
+                        // Cálculo de Plazo
+                        let pTexto = "-";
+                        let pClass = "bg-light text-dark";
 
-                        if (estado.toLowerCase() !== "cumplido" && fechaVenc && fechaVenc.includes("/")) {
-                            const partes = fechaVenc.split('/');
-                            const fechaObjeto = new Date(partes[2], partes[1] - 1, partes[0]);
+                        if (est.toLowerCase() !== "cumplido" && venc.includes("/")) {
+                            const part = venc.split('/');
+                            const fObj = new Date(part[2], part[1]-1, part[0]);
                             const hoy = new Date();
                             hoy.setHours(0,0,0,0);
-                            const diferencia = fechaObjeto - hoy;
-                            const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+                            const dif = Math.ceil((fObj - hoy) / (1000*60*60*24));
 
-                            if (!isNaN(dias)) {
-                                if (dias <= 0) { diasTexto = "Vencido"; diasBadgeClass = "bg-danger text-white"; }
-                                else if (dias <= 3) { diasTexto = dias + " días"; diasBadgeClass = "bg-warning text-dark"; }
-                                else { diasTexto = dias + " días"; diasBadgeClass = "bg-info text-white"; }
+                            if (!isNaN(dif)) {
+                                pTexto = dif + " días";
+                                if (dif <= 0) { pTexto = "Vencido"; pClass = "bg-danger text-white"; }
+                                else if (dif <= 3) { pClass = "bg-warning text-dark"; } // NARANJA
+                                else { pClass = "bg-info text-white"; }
                             }
                         }
 
-                        let badgeClass = "bg-secondary";
-                        const est = estado.toLowerCase();
-                        if (est.includes("pendiente")) badgeClass = "badge-pendiente";
-                        if (est.includes("proceso")) badgeClass = "badge-proceso";
-                        if (est.includes("cumplido") || est.includes("ok")) badgeClass = "badge-cumplido";
+                        let bEst = "bg-secondary";
+                        if (est.toLowerCase().includes("pend")) bEst = "badge-pendiente";
+                        if (est.toLowerCase().includes("proc")) bEst = "badge-proceso";
+                        if (est.toLowerCase().includes("cumpl") || est.toLowerCase().includes("ok")) bEst = "badge-cumplido";
 
-                        cuerpoTabla.innerHTML += `
-                            <tr>
-                                <td>${item}</td>
-                                <td class="fw-bold">${obligacion}</td>
-                                <td>${fechaVenc}</td>
-                                <td><span class="badge ${diasBadgeClass}">${diasTexto}</span></td>
-                                <td><span class="badge ${badgeClass}">${estado}</span></td>
-                            </tr>`;
+                        cuerpo.innerHTML += `<tr>
+                            <td>${f[0]}</td>
+                            <td class="fw-bold">${f[1]}</td>
+                            <td>${venc}</td>
+                            <td><span class="badge ${pClass}">${pTexto}</span></td>
+                            <td><span class="badge ${bEst}">${f[4]}</span></td>
+                        </tr>`;
                     }
                 });
-            } catch (error) { console.error("Error Obligaciones:", error); }
+            } catch (e) { console.log(e); }
         }
 
+        // CARGAR LOTE 1 (IGUAL AL ORIGINAL)
         async function cargarLote1() {
             const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1p2M3Y-Yj6C0T5-lM9mKq1f8uR0iK-lXp-vG7_V0qN5R-u-yX7YvK-q-L8N-yX_X_R-vG7_V0qN5R/pub?gid=1510344498&output=csv";
             try {
-                const respuesta = await fetch(url);
-                const datos = await respuesta.text();
-                const filas = datos.split("\n").slice(1);
-                const cuerpoTabla = document.getElementById("cuerpo-lote1");
-                cuerpoTabla.innerHTML = "";
-
-                filas.forEach(linea => {
-                    const fila = linea.split(",");
-                    if (fila.length >= 5) {
-                        const falta = parseInt(fila[4]);
-                        const rowClass = falta > 0 ? "table-warning" : "";
-                        cuerpoTabla.innerHTML += `
-                            <tr class="${rowClass}">
-                                <td>${fila[1]}</td>
-                                <td>${fila[2]}</td>
-                                <td>${fila[3]}</td>
-                                <td class="text-success fw-bold">${fila[5] || '0'}</td>
-                                <td class="text-danger fw-bold">${fila[4]}</td>
-                            </tr>`;
+                const r = await fetch(url);
+                const d = await r.text();
+                const filas = d.split("\n").slice(1);
+                const cuerpo = document.getElementById("cuerpo-lote1");
+                cuerpo.innerHTML = "";
+                filas.forEach(l => {
+                    const f = l.split(",");
+                    if (f.length >= 5) {
+                        const falta = parseInt(f[4]);
+                        const rowCl = falta > 0 ? "table-warning" : "";
+                        cuerpo.innerHTML += `<tr class="${rowCl}">
+                            <td>${f[1]}</td>
+                            <td>${f[2]}</td>
+                            <td>${f[3]}</td>
+                            <td class="text-success fw-bold">${f[5] || '0'}</td>
+                            <td class="text-danger fw-bold">${f[4]}</td>
+                        </tr>`;
                     }
                 });
-            } catch (error) { console.error("Error Lote 1:", error); }
+            } catch (e) { console.log(e); }
         }
 
+        // CARGAR HERRAMIENTAS
+        async function cargarHerramientas() {
+            const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1p2M3Y-Yj6C0T5-lM9mKq1f8uR0iK-lXp-vG7_V0qN5R-u-yX7YvK-q-L8N-yX_X_R-vG7_V0qN5R/pub?gid=1833772828&output=csv";
+            try {
+                const r = await fetch(url);
+                const d = await r.text();
+                const filas = d.split("\n").slice(1);
+                const cuerpo = document.getElementById("cuerpo-herramientas");
+                cuerpo.innerHTML = "";
+                filas.forEach(l => {
+                    const f = l.split(",");
+                    if (f.length >= 2) {
+                        cuerpo.innerHTML += `<tr><td>${f[0]}</td><td>${f[1]}</td></tr>`;
+                    }
+                });
+            } catch (e) { console.log(e); }
+        }
+
+        // FUNCIONES DE UTILIDAD (ORIGINALES)
         function filtrarTabla() {
             let input = document.getElementById("buscadorInput").value.toUpperCase();
             let rows = document.getElementById("cuerpo-lote1").getElementsByTagName("tr");
@@ -173,12 +204,14 @@
                 rows[i].style.display = text.toUpperCase().includes(input) ? "" : "none";
             }
         }
-
+        function toggleHerramientas() {
+            const x = document.getElementById("lista-herramientas");
+            x.style.display = x.style.display === "none" ? "block" : "none";
+        }
         function exportarExcel() {
             const wb = XLSX.utils.table_to_book(document.getElementById('tabla-lote1'));
             XLSX.writeFile(wb, 'Inventario_Lote1.xlsx');
         }
-
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = jsPDF();
@@ -186,23 +219,15 @@
             doc.autoTable({ html: '#tabla-lote1', startY: 20 });
             doc.save('Inventario_Lote1.pdf');
         }
-
-        function imprimirTabla() {
-            const contenido = document.getElementById("tabla-lote1").outerHTML;
-            const ventana = window.open('', '', 'height=600,width=800');
-            ventana.document.write('<html><head><title>Imprimir</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\"></head><body>');
-            ventana.document.write('<div class=\"container mt-4\"><h4>Inventario Lote 1</h4>' + contenido + '</div></body></html>');
-            ventana.document.close();
-            setTimeout(() => { ventana.print(); ventana.close(); }, 1000);
-        }
+        function imprimirTabla() { window.print(); }
 
         function enviarWhatsAppObligaciones() {
-            let mensaje = "*ALERTA OBLIGACIONES - dw*%0A%0A";
+            let mensaje = "*CONTROL OBLIGACIONES - dw*%0A%0A";
             const filas = document.getElementById("cuerpo-obligaciones").getElementsByTagName("tr");
             for (let row of filas) {
                 const c = row.getElementsByTagName("td");
                 if (!c[4].innerText.toLowerCase().includes("cumplido")) {
-                    mensaje += `⚠️ *${c[1].innerText}*%0AVence: ${c[2].innerText} (${c[3].innerText})%0A%0A`;
+                    mensaje += `⚠️ *${c[1].innerText}*%0AVence: ${c[2].innerText} (Plazo: ${c[3].innerText})%0A%0A`;
                 }
             }
             window.open(`https://wa.me/?text=${mensaje}`, '_blank');
@@ -210,6 +235,7 @@
 
         cargarObligaciones();
         cargarLote1();
+        cargarHerramientas();
     </script>
 </body>
 </html>
