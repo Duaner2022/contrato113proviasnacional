@@ -179,7 +179,7 @@
     </div>
 
     <div class="summary-box">
-        <h4 class="summary-title">📊 RESUMEN GENERAL DE OBLIGACIONES - PRESTACIÓN ADICIONAL N°01- DÍA 1 (28 DE ENERO 2026)</h4>
+        <h4 class="summary-title">📊 RESUMEN GENERAL - PRESTACIÓN ADICIONAL N°01 (28 DE ENERO 2026)</h4>
         <div class="table-container">
             <table class="resumen-table">
                 <thead>
@@ -245,35 +245,49 @@ document.addEventListener("DOMContentLoaded", function() {
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- DATOS TARJETAS ---
+        // --- DATOS TARJETAS (INCLUYENDO ADICIONAL N°01) ---
         const data = [
             {
                 t: "1. Documentación Técnica: dos (02) originales de cada uno",
                 plazo: "90 Días Calendario",
                 p: [2026, 1, 13], 
                 l: [2026, 2, 15], 
-                h: "<li>Manual de montaje (Instalación) y Lanzamiento</li><li>Manual Técnico de Operación y Mantenimiento</li><li>Manual Técnico (Catálogo) de componentes</li><li>Los planos en versión física y digital (AutoCAD editable)</li><li>Video de usos e instalación (>10 min, español/subtitulado)</li><li>Memoria de Cálculo.</li>"
+                h: "<li>Manual de montaje y Lanzamiento</li><li>Manual Técnico de Operación y Mantenimiento</li><li>Manual Técnico de componentes</li><li>Planos físicos y digitales</li><li>Video de usos e instalación</li><li>Memoria de Cálculo.</li>"
             },
             {
                 t: "2. 1ra Entrega (Lote 1)",
                 plazo: "150 Días Calendario",
                 p: [2026, 3, 14], 
                 l: [2026, 4, 14], 
-                h: "<li class='check'>08 puentes de 15m una vía s/p DS</li><li class='check'>08 puentes de 21m una vía s/p DS</li><li class='check'>10 puentes de 27m una vía s/p DSR2</li><li class='check'>10 puentes de 39m una vía s/p TSR2</li><li class='check'>01 puentes de 60m una vía s/p DDR2*</li><li class='check'>Narices para 27m, 39m y 60m</li><li class='check'>Tableros y Piezas de reposición</li><li class='check'>03 juegos kit de herramientas</li><li>Dossier de calidad</li><li>06 torquímetros</li><li>02 medidores espesores (Calibrar en Perú)</li><li>Prueba de carga: Puente de una vía (60.96m) sin pasarelas.</li><li>Ensayos de materiales</li>"
+                h: "<li class='check'>08 puentes de 15m s/p</li><li class='check'>08 puentes de 21m s/p</li><li class='check'>10 puentes de 27m s/p</li><li class='check'>10 puentes de 39m s/p</li><li class='check'>01 puentes de 60m s/p</li><li>Dossier de calidad</li><li>Prueba de carga</li>"
             },
             {
                 t: "3. 2da Entrega (Lote 2)",
                 plazo: "200 Días Calendario",
                 p: [2026, 5, 3], 
                 l: [2026, 6, 3], 
-                h: "<li class='check'>05 puentes de 60m una vía s/p DDR2*5</li><li class='check'>05 puentes de 60m una vía c/p DDR2SH*</li><li class='check'>02 puentes de 15m doble vía s/p DS*</li><li class='check'>04 puentes de 21m doble vía s/p DSR2**</li><li class='check'>Piezas de reposición</li><li>Dossier de calidad</li><li>Prueba de carga: Puente de doble vía (21.34m) sin pasarelas.</li><li>Ensayos de materiales</li><li>Capacitación técnica (Grupo 1)</li>"
+                h: "<li class='check'>05 puentes de 60m s/p</li><li class='check'>05 puentes de 60m c/p</li><li class='check'>02 puentes de 15m doble vía</li><li class='check'>04 puentes de 21m doble vía</li><li>Dossier de calidad</li><li>Capacitación técnica (Grupo 1)</li>"
             },
             {
                 t: "4. 3era Entrega (Lote 3)",
                 plazo: "240 Días Calendario",
                 p: [2026, 6, 13], 
                 l: [2026, 7, 12], 
-                h: "<li class='check'>04 puentes de 27m doble vía s/p TSR2*</li><li class='check'>04 puentes de 39m doble vía s/p DDR2*</li><li class='check'>04 puentes de 60m doble vía c/p TDR3SH*</li><li class='check'>Narices doble vía (39m, 60m)</li><li class='check'>Repuestos 10% y Tableros</li><li class='check'>02 juegos kit herramientas</li><li>Dossier de calidad</li><li>04 torquímetros</li><li>Prueba de carga: Puente de doble vía (60.96m) con pasarelas.</li><li>Ensayos de materiales</li><li>Capacitación técnica (Grupo 2)</li>"
+                h: "<li class='check'>04 puentes de 27m doble vía</li><li class='check'>04 puentes de 39m doble vía</li><li class='check'>04 puentes de 60m doble vía</li><li>Narices doble vía</li><li>Dossier de calidad</li><li>Capacitación técnica (Grupo 2)</li>"
+            },
+            {
+                t: "5. Entrega Doc. Técnica Prestacion Adicional N°01",
+                plazo: "90 Días Calendario (Adicional)",
+                p: [2026, 2, 28], // 28 Marzo (30 días antes de 27 Abr)
+                l: [2026, 3, 27], // 27 Abril
+                h: "<li>Documentación técnica específica para el Adicional N°01.</li><li>Planos y Memorias de cálculo actualizadas.</li><li>Cronograma de ejecución del adicional.</li>"
+            },
+            {
+                t: "6. Prestacion Adicional N°01 (Unica Entrega)",
+                plazo: "240 Días Calendario (Adicional)",
+                p: [2026, 7, 26], // 26 Agosto (30 días antes de 24 Set)
+                l: [2026, 8, 24], // 24 Setiembre
+                h: "<li>Suministro total de componentes correspondientes al Adicional N°01.</li><li>Dossier de calidad del adicional.</li><li>Pruebas de materiales específicas.</li>"
             }
         ];
 
@@ -341,16 +355,17 @@ function shareWS() {
         {n:"Doc. Técnica", d:new Date(2026,2,15), p:"90 Días"},
         {n:"1ra Entrega", d:new Date(2026,4,14), p:"150 Días"},
         {n:"2da Entrega", d:new Date(2026,6,3), p:"200 Días"},
-        {n:"3ra Entrega", d:new Date(2026,7,12), p:"240 Días"}
+        {n:"3ra Entrega", d:new Date(2026,7,12), p:"240 Días"},
+        {n:"Doc. Técnica Adic. 01", d:new Date(2026,3,27), p:"90 Días"},
+        {n:"Adic. 01 (Unica)", d:new Date(2026,8,24), p:"240 Días"}
     ];
     items.forEach(i => {
         const r = Math.ceil((i.d - today)/86400000);
         const icon = r < 30 ? "⚠️" : "✅";
-        msg += `${icon} *${i.n}* (Plazo: ${i.p})\n🗓️ Vence: ${i.d.getDate()}/${i.d.getMonth()+1}/${i.d.getFullYear()}\n⏳ Restan: ${r} Días Calendarios\n\n`;
+        msg += `${icon} *${i.n}*\n🗓️ Vence: ${i.d.getDate()}/${i.d.getMonth()+1}/${i.d.getFullYear()}\n⏳ Restan: ${r} Días\n\n`;
     });
     window.open("https://wa.me/?text=" + encodeURIComponent(msg));
 }
 </script>
 </body>
 </html>
-
