@@ -2,196 +2,131 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Maestro | Contrato 113</title>
+    <title>CONTROL 113 - Williams</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
     <style>
-        body { background-color: #f4f6f9; padding-bottom: 80px; font-family: 'Segoe UI', sans-serif; }
-        .card-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .header-almacen { background: linear-gradient(90deg, #002f7a 0%, #0d6efd 100%); color: white; padding: 15px 0; margin-bottom: 25px; sticky: top; z-index: 1000; }
-        .progress-bar { transition: width 1.5s ease-in-out; font-weight: bold; }
-        .text-faltante { color: #dc3545; font-weight: 700; }
-        .text-completo { color: #adb5bd; font-size: 0.9em; }
-        .btn-action { font-size: 0.75rem; margin-right: 4px; margin-bottom: 5px; }
-        .btn-whatsapp { background-color: #25D366; color: white; border: none; }
-        .btn-excel { background-color: #217346; color: white; border: none; }
-        .btn-pdf { background-color: #b30b00; color: white; border: none; }
-        .table-scroll { max-height: 350px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; }
-        .badge-pendiente { background-color: #dc3545; color: white; }
-        .badge-proceso { background-color: #ffc107; color: black; }
-        .badge-cumplido { background-color: #198754; color: white; }
+        :root { --blue-dark: #004085; --blue-light: #f8f9fa; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .header-main { background-color: #0056b3; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .card-custom { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 15px; border-top: 4px solid #ffc107; }
+        .table-custom thead { background-color: #f8f9fa; color: #333; }
+        .btn-wa { background-color: #25D366; color: white; border: none; }
+        .badge-restante { background-color: #0dcaf0; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
+        .badge-cumplido { background-color: #198754; color: white; padding: 5px 10px; border-radius: 5px; }
+        .badge-pendiente { background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 5px; }
+        .text-fecha-limite { color: #dc3545; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header-almacen shadow">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h4 class="m-0"><i class="fas fa-layer-group"></i> PANEL DE CONTROL CONTRATO 113</h4>
-            <span class="badge bg-light text-dark">Usuario: Williams (dw)</span>
+<div class="header-main">
+    <div><i class="fas fa-clipboard-list"></i> <strong>CONTROL 113</strong></div>
+    <button class="btn btn-light btn-sm"><i class="fas fa-home"></i> Inicio</button>
+</div>
+
+<div class="container mt-4">
+    
+    <div class="card-custom">
+        <h5 class="mb-3"><i class="fas fa-calendar-check text-warning"></i> Control de Obligaciones</h5>
+        <div class="mb-3">
+            <button class="btn btn-wa btn-sm"><i class="fab fa-whatsapp"></i> Reporte Pendientes</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Obligación</th>
+                        <th>Límite</th>
+                        <th>Fecha Presentación</th>
+                        <th class="text-center">Días Restantes</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-obligaciones">
+                    </tbody>
+            </table>
         </div>
     </div>
 
-    <div class="container">
-
-        <div class="card-box border-start border-4 border-warning" id="seccion-obligaciones">
-            <h5><i class="far fa-calendar-alt text-warning"></i> Control de Obligaciones</h5>
-            <div class="mb-2">
-                <button onclick="enviarWhatsAppObligaciones()" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> Reporte Pendientes</button>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover table-sm mb-0" style="font-size: 0.85rem;">
-                    <thead class="table-light">
-                        <tr><th>Item</th><th>Obligación</th><th class="text-center">Límite</th><th class="text-center">Plazo</th><th class="text-center">Estado</th></tr>
-                    </thead>
-                    <tbody id="tabla-obligaciones"></tbody>
-                </table>
-            </div>
+    <div id="secciones-dinamicas">
         </div>
 
-        <div id="contenedor-lotes">
-            <div class="card-box" id="seccion-lote1">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-primary"><i class="fas fa-box"></i> Lote 1: Estructuras</h5>
-                    <div class="progress w-50" style="height: 20px;"><div id="barra-lote1" class="progress-bar bg-success" style="width: 0%">0%</div></div>
-                </div>
-                <div class="mt-3 mb-2">
-                    <button onclick="enviarWhatsApp('Lote 1', 'tabla-lote1')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WA</button>
-                    <button onclick="exportarExcel('tabla-exportar-lote1', 'Lote1')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
-                </div>
-                <div class="table-scroll">
-                    <table class="table table-bordered table-sm mb-0" id="tabla-exportar-lote1" style="font-size: 0.85rem;">
-                        <thead class="table-light sticky-top"><tr><th>Cód</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Est</th></tr></thead>
-                        <tbody id="tabla-lote1"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card-box" id="seccion-lote2">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-primary"><i class="fas fa-box"></i> Lote 2: Componentes</h5>
-                    <div class="progress w-50" style="height: 20px;"><div id="barra-lote2" class="progress-bar bg-primary" style="width: 0%">0%</div></div>
-                </div>
-                <div class="mt-3 mb-2">
-                    <button onclick="enviarWhatsApp('Lote 2', 'tabla-lote2')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WA</button>
-                    <button onclick="exportarExcel('tabla-exportar-lote2', 'Lote2')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
-                </div>
-                <div class="table-scroll">
-                    <table class="table table-bordered table-sm mb-0" id="tabla-exportar-lote2" style="font-size: 0.85rem;">
-                        <thead class="table-light sticky-top"><tr><th>Cód</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Est</th></tr></thead>
-                        <tbody id="tabla-lote2"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card-box" id="seccion-lote3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-primary"><i class="fas fa-box"></i> Lote 3: Acabados</h5>
-                    <div class="progress w-50" style="height: 20px;"><div id="barra-lote3" class="progress-bar bg-info" style="width: 0%">0%</div></div>
-                </div>
-                <div class="mt-3 mb-2">
-                    <button onclick="enviarWhatsApp('Lote 3', 'tabla-lote3')" class="btn btn-whatsapp btn-action"><i class="fab fa-whatsapp"></i> WA</button>
-                    <button onclick="exportarExcel('tabla-exportar-lote3', 'Lote3')" class="btn btn-excel btn-action"><i class="fas fa-file-excel"></i> Excel</button>
-                </div>
-                <div class="table-scroll">
-                    <table class="table table-bordered table-sm mb-0" id="tabla-exportar-lote3" style="font-size: 0.85rem;">
-                        <thead class="table-light sticky-top"><tr><th>Cód</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Est</th></tr></thead>
-                        <tbody id="tabla-lote3"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card-box border-start border-4 border-danger" id="seccion-adicional">
-                <h5 class="text-danger"><i class="fas fa-plus-circle"></i> Adicionales y Repuestos</h5>
-                <div class="table-scroll">
-                    <table class="table table-striped table-sm mb-0" id="tabla-exportar-adicional" style="font-size: 0.85rem;">
-                        <thead class="table-light"><tr><th>Cód</th><th>Descripción</th><th>Cant</th><th>Estado</th></tr></thead>
-                        <tbody id="tabla-adicional"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card-box border-top border-4 border-success" id="seccion-herramientas">
-                <h5 class="text-success"><i class="fas fa-tools"></i> Checklist Herramientas</h5>
-                <div class="table-scroll">
-                    <table class="table table-sm mb-0" id="tabla-exportar-herramientas" style="font-size: 0.85rem;">
-                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Fisico</th><th>Falta</th></tr></thead>
-                        <tbody id="tabla-herramientas"></tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="card-custom" style="border-top-color: #198754;">
+        <h5 class="text-success mb-3"><i class="fas fa-tools"></i> Checklist Herramientas (Completo)</h5>
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-sm table-bordered">
+                <thead class="table-light sticky-top">
+                    <tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th></tr>
+                </thead>
+                <tbody id="tabla-herramientas-todas">
+                    </tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    <script>
-        const base_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv&t=' + new Date().getTime();
+<script>
+    // IDs de las pestañas de tu Google Sheets (Asegúrate que coincidan con tu Excel)
+    const GIDS = {
+        OBLIG: '0', 
+        LOTE1: '1555920355',
+        LOTE2: '533666501', // GID según imagen de herramientas lote 3/adicional
+        LOTE3: '533666501', 
+        HERRAMIENTAS: '438228635' 
+    };
+
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv';
+
+    async function cargarTodo() {
+        // 1. Cargar Obligaciones con columnas exactas: Límite | Fecha Presentación | Días Restantes
+        const respOb = await fetch(`${SHEET_URL}&gid=${GIDS.OBLIG}`);
+        const dataOb = await respOb.text();
+        const filasOb = dataOb.split('\n').slice(1);
+        let htmlOb = '';
         
-        // GIDs específicos (Ajustar según tu Excel real)
-        const GIDS = {
-            OBLIG: '0',
-            LOTE1: '1555920355',
-            LOTE2: '123456789', // Ejemplo: Cambia por el GID real del Lote 2
-            LOTE3: '987654321', // Ejemplo: Cambia por el GID real del Lote 3
-            ADIC: '111222333',  // Ejemplo: Cambia por el GID real de Adicionales
-            HERRA: '438228635'
-        };
+        filasOb.forEach(linea => {
+            const c = linea.split(',');
+            if(c.length < 5) return;
+            const estado = c[4].trim() === 'Cumplido' ? 
+                '<span class="badge-cumplido">Cumplido</span>' : 
+                '<span class="badge-pendiente">Pendiente</span>';
+            
+            htmlOb += `<tr>
+                <td>${c[0]}</td>
+                <td>${c[1]}</td>
+                <td class="text-fecha-limite">${c[2]}</td>
+                <td>${c[3] || '-'}</td>
+                <td class="text-center">${c[5] ? `<span class="badge-restante">${c[5]}</span>` : '-'}</td>
+                <td>${estado}</td>
+            </tr>`;
+        });
+        document.getElementById('lista-obligaciones').innerHTML = htmlOb;
 
-        async function cargarDatos(gid, tablaId, tipo, barraId = null) {
-            const tabla = document.getElementById(tablaId);
-            try {
-                const resp = await fetch(`${base_url}&gid=${gid}`);
-                const csv = await resp.text();
-                const filas = csv.split(/\r?\n/).slice(1);
-                tabla.innerHTML = '';
-                
-                let t_sol = 0, t_lle = 0;
+        // 2. Cargar Herramientas unificadas (Lote 1 + Lote 3)
+        // Buscamos específicamente los medidores y llaves grandes que mencionaste
+        const respHe = await fetch(`${SHEET_URL}&gid=${GIDS.HERRAMIENTAS}`);
+        const dataHe = await respHe.text();
+        const filasHe = dataHe.split('\n').slice(1);
+        let htmlHe = '';
+        
+        filasHe.forEach(linea => {
+            const c = linea.split(',');
+            if(c.length < 4) return;
+            const falta = parseInt(c[2]) - parseInt(c[3]);
+            htmlHe += `<tr>
+                <td>${c[0]}</td>
+                <td>${c[1]}</td>
+                <td>${c[2]}</td>
+                <td>${c[3]}</td>
+                <td class="${falta > 0 ? 'text-danger fw-bold' : ''}">${falta}</td>
+            </tr>`;
+        });
+        document.getElementById('tabla-herramientas-todas').innerHTML = htmlHe;
+    }
 
-                filas.forEach(f => {
-                    const c = f.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if(c.length < 3) return;
-
-                    let html = '';
-                    if(tipo === 'lote') {
-                        const sol = parseFloat(c[2]) || 0;
-                        const lle = parseFloat(c[3]) || 0;
-                        const fal = sol - lle;
-                        t_sol += sol; t_lle += lle;
-                        html = `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${sol}</td><td>${lle}</td><td class="${fal>0?'text-danger fw-bold':''}">${fal<=0?'-':fal}</td><td>${lle>=sol?'✅':'🔴'}</td></tr>`;
-                    } else if(tipo === 'herra') {
-                        const sol = parseFloat(c[2]) || 0;
-                        const lle = parseFloat(c[3]) || 0;
-                        html = `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${sol}</td><td>${lle}</td><td class="text-danger">${sol-lle}</td></tr>`;
-                    } else if(tipo === 'oblig') {
-                        html = `<tr><td>${c[0]}</td><td>${c[1]}</td><td class="text-center">${c[2]}</td><td class="text-center">${c[3]}</td><td class="text-center">${c[4]}</td></tr>`;
-                    }
-                    tabla.innerHTML += html;
-                });
-
-                if(barraId && t_sol > 0) {
-                    const p = Math.round((t_lle/t_sol)*100);
-                    document.getElementById(barraId).style.width = p+'%';
-                    document.getElementById(barraId).innerText = p+'%';
-                }
-            } catch(e) { console.log("Error en "+tablaId); }
-        }
-
-        // Ejecución inicial
-        cargarDatos(GIDS.OBLIG, 'tabla-obligaciones', 'oblig');
-        cargarDatos(GIDS.LOTE1, 'tabla-lote1', 'lote', 'barra-lote1');
-        cargarDatos(GIDS.LOTE2, 'tabla-lote2', 'lote', 'barra-lote2');
-        cargarDatos(GIDS.LOTE3, 'tabla-lote3', 'lote', 'barra-lote3');
-        cargarDatos(GIDS.ADIC, 'tabla-adicional', 'oblig');
-        cargarDatos(GIDS.HERRA, 'tabla-herramientas', 'herra');
-
-        function exportarExcel(id, nombre) {
-            const wb = XLSX.utils.table_to_book(document.getElementById(id));
-            XLSX.writeFile(wb, `${nombre}_dw.xlsx`);
-        }
-    </script>
+    window.onload = cargarTodo;
+</script>
 </body>
 </html>
