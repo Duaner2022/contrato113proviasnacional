@@ -37,7 +37,7 @@
         <button onclick="compartirWhatsApp()" class="btn btn-primary btn-export" style="background-color: #25D366; border:none;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
     </div>
 
-    <div class="card-custom">
+    <div class="card-custom" id="seccion-obligaciones">
         <h5><i class="fas fa-calendar-check text-warning"></i> Control de Obligaciones Contrato 113 y Prestación Adicional N°01</h5>
         <div class="table-responsive">
             <table class="table table-hover align-middle" id="tabla-export-oblig" style="font-size: 0.85rem;">
@@ -50,15 +50,75 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6"><div class="card-custom" style="border-left-color: #0d6efd;"><h6>Lote 1: Estructuras</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-lote1"></tbody></table></div></div></div>
-        <div class="col-md-6"><div class="card-custom" style="border-left-color: #6610f2;"><h6>Lote 2: Estructuras</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-lote2"></tbody></table></div></div></div>
-        <div class="col-md-6"><div class="card-custom" style="border-left-color: #0dcaf0;"><h6>Lote 3: Estructuras</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-lote3"></tbody></table></div></div></div>
-        <div class="col-md-6"><div class="card-custom" style="border-left-color: #dc3545;"><h6>Adicional</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-adicional"></tbody></table></div></div></div>
+        <div class="col-md-6">
+            <div class="card-custom" style="border-left-color: #0d6efd;">
+                <h6 class="text-primary fw-bold">Lote 1: Estructuras</h6>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-lote1"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-custom" style="border-left-color: #6610f2;">
+                <h6 style="color: #6610f2;" class="fw-bold">Lote 2: Estructuras</h6>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-lote2"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-custom" style="border-left-color: #0dcaf0;">
+                <h6 class="text-info fw-bold">Lote 3: Estructuras</h6>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-lote3"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-custom" style="border-left-color: #dc3545;">
+                <h6 class="text-danger fw-bold">Adicional</h6>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="data-adicional"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row mt-3">
-        <div class="col-md-6"><div class="card-custom" style="border-left-color: #198754;"><h6>Herramientas LOTE 1</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="herra-l1"></tbody></table></div></div></div>
-        <div class="col-md-6"><div class="card-custom" style="border-left-color: #198754;"><h6>Herramientas LOTE 3</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="herra-l3"></tbody></table></div></div></div>
+        <div class="col-md-6">
+            <div class="card-custom" style="border-left-color: #198754;">
+                <h6 class="text-success fw-bold">Herramientas LOTE 1</h6>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="herra-l1"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-custom" style="border-left-color: #198754;">
+                <h6 class="text-success fw-bold">Herramientas LOTE 3</h6>
+                <div class="table-scroll">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
+                        <tbody id="herra-l3"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -66,7 +126,13 @@
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv';
     
     const GIDS = {
-        OBLIG: '0', L1: '1555920355', L2: '1584833780', L3: '948956372', ADIC: '404296762', H1: '438228635', H3: '533666501' 
+        OBLIG: '0', 
+        L1: '1555920355', 
+        L2: '1584833780', 
+        L3: '948956372', 
+        ADIC: '404296762', 
+        H1: '438228635',
+        H3: '533666501' 
     };
 
     async function cargar(gid, elementId, modo) {
@@ -95,47 +161,15 @@
         } catch (e) { console.error("Error en " + elementId); }
     }
 
-    function compartirWhatsApp() {
-        const filas = document.querySelectorAll("#tabla-obligaciones tr");
-        let mensaje = "*REPORTE DE CONTROL 113 - Williams (dw)*\n\n";
-        let cumplidos = 0;
-        let pendientes = 0;
-        let listaPendientes = "";
-
-        filas.forEach(fila => {
-            const c = fila.cells;
-            if (c.length < 6) return;
-            const obligacion = c[1].innerText;
-            const limite = c[2].innerText;
-            const estado = c[5].innerText;
-
-            if (estado === "Cumplido") {
-                cumplidos++;
-            } else {
-                pendientes++;
-                listaPendientes += `• ${obligacion} (Vence: ${limite})\n`;
-            }
-        });
-
-        mensaje += `✅ *Cumplidos:* ${cumplidos}\n`;
-        mensaje += `⚠️ *Pendientes:* ${pendientes}\n\n`;
-        
-        if (pendientes > 0) {
-            mensaje += "*DETALLE DE PENDIENTES:*\n" + listaPendientes;
-        } else {
-            mensaje += "🎉 ¡Todas las obligaciones están al día!";
-        }
-
-        const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-        window.open(url, '_blank');
-    }
-
-    // Exportaciones PDF/Excel se mantienen igual
+    // FUNCIONES DE EXPORTACIÓN
     function exportarExcel() {
         const wb = XLSX.utils.book_new();
-        ['tabla-export-oblig', 'data-lote1', 'data-lote2', 'data-lote3', 'data-adicional', 'herra-l1', 'herra-l3'].forEach((id, i) => {
+        const tablas = ['tabla-export-oblig', 'data-lote1', 'data-lote2', 'data-lote3', 'data-adicional', 'herra-l1', 'herra-l3'];
+        
+        tablas.forEach((id, index) => {
             const el = document.getElementById(id);
-            if(el) XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(el), "Hoja_" + i);
+            const ws = XLSX.utils.table_to_sheet(el);
+            XLSX.utils.book_append_sheet(wb, ws, "Hoja_" + index);
         });
         XLSX.writeFile(wb, "Reporte_Control_113.xlsx");
     }
@@ -146,6 +180,11 @@
         doc.text("REPORTE CONTROL 113 - DW", 40, 30);
         doc.autoTable({ html: '#tabla-export-oblig', startY: 50 });
         doc.save("Control_113_dw.pdf");
+    }
+
+    function compartirWhatsApp() {
+        const texto = encodeURIComponent("Hola dw, envío el reporte actualizado del Panel de Control 113.");
+        window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
 
     window.onload = () => {
