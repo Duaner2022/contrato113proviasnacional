@@ -1,52 +1,46 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>CONTROL 113 - Williams (dw)</title>
+    <title>CONTROL 113 - PRESTACION ADICIONAL N°01</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
-        .header-blue { background: #0056b3; color: white; padding: 12px 20px; font-weight: bold; display: flex; flex-direction: row; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        
-        /* Ajuste para que el título no se vea mal en celulares pequeños */
-        @media (max-width: 576px) {
-            .header-blue { font-size: 0.8rem; flex-direction: column; text-align: center; gap: 10px; }
-            .btn-inicio { width: 100%; }
-        }
-
+        .header-blue { background: #0056b3; color: white; padding: 12px 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .card-custom { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 20px; padding: 15px; border-left: 5px solid #ffc107; }
-        .table-scroll { max-height: 350px; overflow-y: auto; border: 1px solid #eee; }
-        .badge-restante { background-color: #0dcaf0; color: white; border-radius: 12px; padding: 4px 10px; font-weight: bold; font-size: 0.8rem; }
+        .table-scroll { max-height: 280px; overflow-y: auto; border: 1px solid #eee; }
+        .badge-restante { background-color: #0dcaf0; color: white; border-radius: 12px; padding: 4px 10px; font-weight: bold; font-size: 0.85rem; }
         .text-limite { color: #dc3545; font-weight: bold; }
-        .btn-export { font-size: 0.75rem; margin: 2px; }
-        .btn-inicio { background: white; color: #0056b3; font-weight: bold; border: none; padding: 5px 15px; border-radius: 5px; text-decoration: none; }
+        .text-falta { color: #dc3545; font-weight: bold; }
+        .btn-export { font-size: 0.8rem; margin-left: 5px; }
+        .btn-inicio { background: white; color: #0056b3; font-weight: bold; border: none; padding: 5px 15px; border-radius: 5px; text-decoration: none; transition: 0.3s; }
+        .btn-inicio:hover { background: #e2e6ea; color: #004494; }
     </style>
 </head>
 <body>
 
 <div class="header-blue">
-    <span><i class="fas fa-file-contract"></i> PANEL CONTRATO 113 Y ADICIONAL N°01</span>
+    <span><i class="fas fa-file-contract"></i> PANEL DE CONTROL CONTRATO 113 Y PRESTACIÓN ADICIONAL N°01</span>
     <a href="index.html" class="btn-inicio"><i class="fas fa-home"></i> IR A INICIO</a>
 </div>
 
-<div class="container-fluid px-2 px-md-4">
+<div class="container-fluid px-4">
     
-    <div class="d-flex flex-wrap justify-content-center justify-content-md-end mt-3">
+    <div class="d-flex justify-content-end mt-3">
         <button onclick="exportarPDF()" class="btn btn-danger btn-export"><i class="fas fa-file-pdf"></i> PDF</button>
         <button onclick="exportarExcel()" class="btn btn-success btn-export"><i class="fas fa-file-excel"></i> Excel</button>
         <button onclick="compartirWhatsApp()" class="btn btn-primary btn-export" style="background-color: #25D366; border:none;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
     </div>
 
     <div class="card-custom">
-        <h6 class="fw-bold"><i class="fas fa-calendar-check text-warning"></i> Control de Obligaciones</h6>
+        <h5><i class="fas fa-calendar-check text-warning"></i> Control de Obligaciones Contrato 113 y Prestación Adicional N°01</h5>
         <div class="table-responsive">
-            <table class="table table-hover table-sm align-middle" id="tabla-export-oblig" style="font-size: 0.8rem; min-width: 600px;">
+            <table class="table table-hover align-middle" id="tabla-export-oblig" style="font-size: 0.85rem;">
                 <thead class="table-light">
                     <tr><th>Item</th><th>Obligación</th><th>Límite</th><th>Presentación</th><th>Días</th><th>Estado</th></tr>
                 </thead>
@@ -56,82 +50,24 @@
     </div>
 
     <div class="row">
-        <div class="col-12 col-md-6">
-            <div class="card-custom" style="border-left-color: #0d6efd;">
-                <h6 class="text-primary fw-bold">Lote 1: Estructuras</h6>
-                <div class="table-responsive table-scroll">
-                    <table class="table table-sm table-striped" style="min-width: 450px;">
-                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
-                        <tbody id="data-lote1"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card-custom" style="border-left-color: #6610f2;">
-                <h6 style="color: #6610f2;" class="fw-bold">Lote 2: Estructuras</h6>
-                <div class="table-responsive table-scroll">
-                    <table class="table table-sm table-striped" style="min-width: 450px;">
-                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
-                        <tbody id="data-lote2"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card-custom" style="border-left-color: #0dcaf0;">
-                <h6 class="text-info fw-bold">Lote 3: Estructuras</h6>
-                <div class="table-responsive table-scroll">
-                    <table class="table table-sm table-striped" style="min-width: 450px;">
-                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
-                        <tbody id="data-lote3"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card-custom" style="border-left-color: #dc3545;">
-                <h6 class="text-danger fw-bold">Adicional</h6>
-                <div class="table-responsive table-scroll">
-                    <table class="table table-sm table-striped" style="min-width: 450px;">
-                        <thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
-                        <tbody id="data-adicional"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <div class="col-md-6"><div class="card-custom" style="border-left-color: #0d6efd;"><h6>Lote 1: Estructuras</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-lote1"></tbody></table></div></div></div>
+        <div class="col-md-6"><div class="card-custom" style="border-left-color: #6610f2;"><h6>Lote 2: Estructuras</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-lote2"></tbody></table></div></div></div>
+        <div class="col-md-6"><div class="card-custom" style="border-left-color: #0dcaf0;"><h6>Lote 3: Estructuras</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-lote3"></tbody></table></div></div></div>
+        <div class="col-md-6"><div class="card-custom" style="border-left-color: #dc3545;"><h6>Adicional</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>CÓD</th><th>Descripción</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="data-adicional"></tbody></table></div></div></div>
     </div>
 
     <div class="row mt-3">
-        <div class="col-12 col-md-6">
-            <div class="card-custom" style="border-left-color: #198754;">
-                <h6 class="text-success fw-bold">Herramientas LOTE 1</h6>
-                <div class="table-responsive table-scroll">
-                    <table class="table table-sm table-striped" style="min-width: 450px;">
-                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
-                        <tbody id="herra-l1"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card-custom" style="border-left-color: #198754;">
-                <h6 class="text-success fw-bold">Herramientas LOTE 3</h6>
-                <div class="table-responsive table-scroll">
-                    <table class="table table-sm table-striped" style="min-width: 450px;">
-                        <thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead>
-                        <tbody id="herra-l3"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <div class="col-md-6"><div class="card-custom" style="border-left-color: #198754;"><h6>Herramientas LOTE 1</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="herra-l1"></tbody></table></div></div></div>
+        <div class="col-md-6"><div class="card-custom" style="border-left-color: #198754;"><h6>Herramientas LOTE 3</h6><div class="table-scroll"><table class="table table-sm table-striped"><thead class="table-dark"><tr><th>Item</th><th>Herramienta</th><th>Total</th><th>Llegó</th><th>Falta</th><th>Estado</th></tr></thead><tbody id="herra-l3"></tbody></table></div></div></div>
     </div>
 </div>
 
 <script>
-    // Tu lógica de GIDs y carga se mantiene intacta para no romper nada
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTw5wsNPW2SZyorWh9hOoHe2LcZgKkdpS29OziFQFPs-Oh1g9yCP8yNSVwAtk8SETKBbRkqmE47l_co/pub?output=csv';
-    const GIDS = { OBLIG: '0', L1: '1555920355', L2: '1584833780', L3: '948956372', ADIC: '404296762', H1: '438228635', H3: '533666501' };
+    
+    const GIDS = {
+        OBLIG: '0', L1: '1555920355', L2: '1584833780', L3: '948956372', ADIC: '404296762', H1: '438228635', H3: '533666501' 
+    };
 
     async function cargar(gid, elementId, modo) {
         try {
@@ -139,9 +75,11 @@
             const data = await resp.text();
             const filas = data.split(/\r?\n/).filter(f => f.trim() !== "");
             let html = '';
+
             filas.slice(1).forEach(linea => {
                 const c = linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(i => i.replace(/"/g, '').trim());
                 if (c.length < 3) return;
+
                 if (modo === 'oblig') {
                     const estClass = c[4] === 'Cumplido' ? 'bg-success' : 'bg-danger';
                     html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td class="text-limite">${c[2]}</td><td>${c[3]||'-'}</td><td><span class="badge-restante">${c[5]||'-'}</span></td><td><span class="badge ${estClass}">${c[4]}</span></td></tr>`;
@@ -149,44 +87,76 @@
                     const total = parseInt(c[2]) || 0;
                     const llego = parseInt(c[3]) || 0;
                     const falta = total - llego;
-                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${total}</td><td>${llego}</td><td class="text-danger fw-bold">${falta}</td><td>${falta===0?'🟢':'🔴'}</td></tr>`;
+                    const estadoIcono = falta === 0 ? '🟢' : '🔴';
+                    html += `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${total}</td><td>${llego}</td><td class="text-danger fw-bold">${falta}</td><td>${estadoIcono}</td></tr>`;
                 }
             });
-            document.getElementById(elementId).innerHTML = html;
-        } catch (e) { console.error(e); }
+            document.getElementById(elementId).innerHTML = html || '<tr><td colspan="6">No hay datos</td></tr>';
+        } catch (e) { console.error("Error en " + elementId); }
     }
 
     function compartirWhatsApp() {
         const filas = document.querySelectorAll("#tabla-obligaciones tr");
-        let mensaje = "*REPORTE CONTRATO 113 - dw*\n\n";
-        let p = 0; let c = 0; let lista = "";
-        filas.forEach(f => {
-            const cells = f.cells;
-            if (cells[5].innerText === "Cumplido") c++; 
-            else { p++; lista += `• ${cells[1].innerText} (${cells[2].innerText})\n`; }
+        let mensaje = "*REPORTE DE CONTROL 113 - Williams (dw)*\n\n";
+        let cumplidos = 0;
+        let pendientes = 0;
+        let listaPendientes = "";
+
+        filas.forEach(fila => {
+            const c = fila.cells;
+            if (c.length < 6) return;
+            const obligacion = c[1].innerText;
+            const limite = c[2].innerText;
+            const estado = c[5].innerText;
+
+            if (estado === "Cumplido") {
+                cumplidos++;
+            } else {
+                pendientes++;
+                listaPendientes += `• ${obligacion} (Vence: ${limite})\n`;
+            }
         });
-        mensaje += `✅ Cumplidos: ${c}\n⚠️ Pendientes: ${p}\n\n*DETALLE:* \n${lista || 'Todo al día'}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+
+        mensaje += `✅ *Cumplidos:* ${cumplidos}\n`;
+        mensaje += `⚠️ *Pendientes:* ${pendientes}\n\n`;
+        
+        if (pendientes > 0) {
+            mensaje += "*DETALLE DE PENDIENTES:*\n" + listaPendientes;
+        } else {
+            mensaje += "🎉 ¡Todas las obligaciones están al día!";
+        }
+
+        const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
     }
 
+    // Exportaciones PDF/Excel se mantienen igual
     function exportarExcel() {
         const wb = XLSX.utils.book_new();
-        ['tabla-export-oblig', 'data-lote1', 'data-lote2', 'data-lote3', 'data-adicional', 'herra-l1', 'herra-l3'].forEach(id => {
+        ['tabla-export-oblig', 'data-lote1', 'data-lote2', 'data-lote3', 'data-adicional', 'herra-l1', 'herra-l3'].forEach((id, i) => {
             const el = document.getElementById(id);
-            if(el) XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(el), id.substring(0,30));
+            if(el) XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(el), "Hoja_" + i);
         });
-        XLSX.writeFile(wb, "Control_113_dw.xlsx");
+        XLSX.writeFile(wb, "Reporte_Control_113.xlsx");
     }
 
     function exportarPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'pt', 'a4');
-        doc.text("REPORTE CONTROL 113", 40, 30);
+        doc.text("REPORTE CONTROL 113 - DW", 40, 30);
         doc.autoTable({ html: '#tabla-export-oblig', startY: 50 });
-        doc.save("Reporte_dw.pdf");
+        doc.save("Control_113_dw.pdf");
     }
 
-    window.onload = () => Object.keys(GIDS).forEach(k => cargar(GIDS[k], k==='OBLIG'?'tabla-obligaciones': (k==='H1'?'herra-l1':k==='H3'?'herra-l3':'data-'+k.toLowerCase()), k==='OBLIG'?'oblig':'lote'));
+    window.onload = () => {
+        cargar(GIDS.OBLIG, 'tabla-obligaciones', 'oblig');
+        cargar(GIDS.L1, 'data-lote1', 'lote');
+        cargar(GIDS.L2, 'data-lote2', 'lote');
+        cargar(GIDS.L3, 'data-lote3', 'lote');
+        cargar(GIDS.ADIC, 'data-adicional', 'lote');
+        cargar(GIDS.H1, 'herra-l1', 'lote');
+        cargar(GIDS.H3, 'herra-l3', 'lote');
+    };
 </script>
 </body>
 </html>
